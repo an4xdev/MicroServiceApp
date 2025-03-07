@@ -1,0 +1,132 @@
+services:
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - 3000:80
+  #   environment:
+  #     - REACT_APP_API_URL=http://localhost/api
+  #   networks:
+  #     - mynetwork
+  #   depends_on:
+  #     - gateway
+
+  gateway:
+    build:
+      context: .
+      dockerfile: ApiGateway/Dockerfile
+    ports:
+      - 80:80
+      - 443:443
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80;https://+:443
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=P@ssword123!
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ENABLE_SCALAR=true
+    depends_on:
+      # - goservice
+      # - flask
+      - auth
+    networks:
+      - mynetwork
+    volumes:
+      - ~/.aspnet/https:/https:ro
+
+  auth:
+    build:
+      context: .
+      dockerfile: AuthService/Dockerfile
+    ports:
+      - 8080:80
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ENABLE_SCALAR=true
+    depends_on:
+      - database
+    networks:
+      - mynetwork
+
+  goservice:
+    build:
+      context: ./go
+      dockerfile: Dockerfile
+    networks:
+      - mynetwork
+
+  flask:
+    build:
+      context: ./flask
+      dockerfile: Dockerfile
+    networks:
+      - mynetwork
+    ports:
+      - 5134:5000
+    depends_on:
+      - database
+
+  spring:
+    build:
+      context: ./JavaService
+      dockerfile: Dockerfile
+    networks:
+      - mynetwork
+    ports:
+      - 2020:8080
+
+  laravel:
+    build:
+      context: ./laravel
+      dockerfile: Dockerfile
+    networks:
+      - mynetwork
+    ports:
+      - 7000:9000
+    volumes:
+      - ./laravel:/var/www
+    depends_on:
+      - database
+  js_express:
+    build:
+      context: ./js_express
+      dockerfile: Dockerfile
+    networks:
+      - mynetwork
+    ports:
+      - 6713:6713
+    depends_on:
+      - database
+
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - 15433:80
+    depends_on:
+      - database
+    networks:
+      - mynetwork
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+
+  database:
+    image: postgres
+    ports:
+      - 5432:5432
+    networks:
+      - mynetwork
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: P@ssword123!
+      POSTGRES_DB: project
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+networks:
+  mynetwork:
+    driver: bridge
+
+volumes:
+  pgdata:
