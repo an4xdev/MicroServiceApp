@@ -26,9 +26,12 @@ services:
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
       - ENABLE_SCALAR=true
     depends_on:
-      # - goservice
-      # - flask
       - auth
+      - goservice
+      - fast_api
+      - spring
+      - laravel
+      - js_express
     networks:
       - mynetwork
     volumes:
@@ -64,12 +67,27 @@ services:
     networks:
       - mynetwork
 
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+    volumes:
+      - redis_data:/data
+
+  redisinsight:
+    image: redislabs/redisinsight:latest
+    ports:
+      - 5540:5540
+    depends_on:
+      - redis
+
   goservice:
     build:
       context: ./go
       dockerfile: Dockerfile
     depends_on:
       - rabbitmq
+      - db_manager
     networks:
       - mynetwork
 
@@ -82,7 +100,7 @@ services:
     ports:
       - 7070:8000
     depends_on:
-      - database
+      - db_manager
       - rabbitmq
 
   spring:
@@ -94,7 +112,7 @@ services:
     ports:
       - 2020:8080
     depends_on:
-      - database
+      - db_manager
 
   laravel:
     build:
@@ -107,7 +125,7 @@ services:
     volumes:
       - ./laravel:/var/www
     depends_on:
-      - database
+      - db_manager
   js_express:
     build:
       context: ./js_express
@@ -117,7 +135,7 @@ services:
     ports:
       - 6713:6713
     depends_on:
-      - database
+      - db_manager
 
   pgadmin:
     image: dpage/pgadmin4
@@ -160,12 +178,12 @@ services:
       - 9000:9000 # API MinIO (S3)
       - 9090:9090 # MinIO Console (UI)
     environment:
-      MINIO_ROOT_USER: admin # Wymagana nazwa użytkownika (login)
-      MINIO_ROOT_PASSWORD: admin123 # Wymagane hasło (min. 8 znaków)
-      MINIO_SERVER_URL: http://localhost:9000 # URL do serwera
-      MINIO_CONSOLE_ADDRESS: ":9090" # Adres dla interfejsu webowego
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: admin123
+      MINIO_SERVER_URL: http://localhost:9000
+      MINIO_CONSOLE_ADDRESS: ":9090"
     volumes:
-      - minio_data:/data # Przechowywanie danych
+      - minio_data:/data
     command: server /data --console-address ":9090"
     networks:
       - mynetwork
@@ -176,3 +194,4 @@ networks:
 volumes:
   pgdata:
   minio_data:
+  redis_data:

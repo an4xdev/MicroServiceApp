@@ -20,7 +20,9 @@ namespace AuthService.Services
             {
                 return null;
             }
-            if (new PasswordHasher<User>().VerifyHashedPassword(user, user.PasswordHash, request.Password)
+
+            if (new PasswordHasher<User>().VerifyHashedPassword(user, user.PasswordSalt + user.PasswordHash,
+                    request.Password)
                 == PasswordVerificationResult.Failed)
             {
                 return null;
@@ -29,7 +31,7 @@ namespace AuthService.Services
             return await CreateTokenResponse(user);
         }
 
-        private async Task<TokenResponseDto> CreateTokenResponse(User? user)
+        private async Task<TokenResponseDto> CreateTokenResponse(User user)
         {
             return new TokenResponseDto
             {
@@ -45,11 +47,16 @@ namespace AuthService.Services
                 return null;
             }
 
-            var user = new User();
+            var salt = GenerateSalt();
+            var user = new User
+            {
+                Username = request.Username,
+                PasswordHash = string.Empty,
+                PasswordSalt = salt,
+            };
             var hashedPassword = new PasswordHasher<User>()
-                .HashPassword(user, request.Password);
+                .HashPassword(user, salt + request.Password);
 
-            user.Username = request.Username;
             user.PasswordHash = hashedPassword;
             user.Role = "user";
 
@@ -57,6 +64,14 @@ namespace AuthService.Services
             await context.SaveChangesAsync();
 
             return user;
+        }
+
+        private static string GenerateSalt()
+        {
+            var saltBytes = new byte[16];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(saltBytes);
+            return Convert.ToBase64String(saltBytes);
         }
 
         public async Task<TokenResponseDto?> RefreshTokensAsync(RefreshTokenRequestDto request)
@@ -72,7 +87,7 @@ namespace AuthService.Services
         {
             var user = await context.Users.FindAsync(userId);
             if (user is null || user.RefreshToken != refreshToken
-                || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+                             || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
             {
                 return null;
             }

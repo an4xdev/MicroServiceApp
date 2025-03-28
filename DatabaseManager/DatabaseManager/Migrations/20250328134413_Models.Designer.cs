@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SharedObjects.AppDbContext;
@@ -11,9 +12,11 @@ using SharedObjects.AppDbContext;
 namespace DatabaseManager.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250328134413_Models")]
+    partial class Models
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,7 +39,7 @@ namespace DatabaseManager.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Companies");
+                    b.ToTable("Company");
                 });
 
             modelBuilder.Entity("SharedObjects.Models.Project", b =>
@@ -62,7 +65,7 @@ namespace DatabaseManager.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("Projects");
+                    b.ToTable("Project");
                 });
 
             modelBuilder.Entity("SharedObjects.Models.Sprint", b =>
@@ -93,7 +96,7 @@ namespace DatabaseManager.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("Sprints");
+                    b.ToTable("Sprint");
                 });
 
             modelBuilder.Entity("SharedObjects.Models.Task", b =>
@@ -131,7 +134,7 @@ namespace DatabaseManager.Migrations
 
                     b.HasIndex("TaskTypeId");
 
-                    b.ToTable("Tasks");
+                    b.ToTable("Task");
                 });
 
             modelBuilder.Entity("SharedObjects.Models.TaskHistory", b =>
@@ -160,7 +163,7 @@ namespace DatabaseManager.Migrations
 
                     b.HasIndex("TaskId");
 
-                    b.ToTable("TaskHistories");
+                    b.ToTable("TaskHistory");
                 });
 
             modelBuilder.Entity("SharedObjects.Models.TaskStatus", b =>
@@ -177,7 +180,7 @@ namespace DatabaseManager.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TaskStatuses");
+                    b.ToTable("TaskStatus");
                 });
 
             modelBuilder.Entity("SharedObjects.Models.TaskType", b =>
@@ -194,7 +197,7 @@ namespace DatabaseManager.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TaskTypes");
+                    b.ToTable("TaskType");
                 });
 
             modelBuilder.Entity("SharedObjects.Models.User", b =>
@@ -229,9 +232,6 @@ namespace DatabaseManager.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Username")
-                        .IsUnique();
 
                     b.ToTable("Users");
                 });
