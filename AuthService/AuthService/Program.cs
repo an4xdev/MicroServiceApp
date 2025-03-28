@@ -1,10 +1,11 @@
-using AuthService.DbContext;
 using AuthService.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using System.Text;
+using SharedObjects.AppDbContext;
+
 
 var builder = WebApplication.CreateBuilder(args);
 

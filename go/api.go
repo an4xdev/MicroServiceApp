@@ -1,38 +1,115 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/websocket"
+	"github.com/streadway/amqp"
 )
 
-type Payload struct {
-	Message string `json:"message"`
-}
-
-func processHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
-		return
+var (
+	clients   = make(map[*websocket.Conn]bool)
+	broadcast = make(chan string)
+	upgrader  = websocket.Upgrader{
+		CheckOrigin: func(r *http.Request) bool { return true },
 	}
-
-	var payload Payload
-	err := json.NewDecoder(r.Body).Decode(&payload)
-	if err != nil {
-		http.Error(w, "Invalid payload", http.StatusBadRequest)
-		return
-	}
-
-	response := map[string]string{
-		"processedMessage": fmt.Sprintf("Processed: %s", payload.Message),
-	}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
-}
+)
 
 func main() {
-	http.HandleFunc("/api/process", processHandler)
-	log.Println("Go Service listening on :8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	// Uruchomienie konsumenta RabbitMQ w osobnej gorutinie
+	go consumeRabbitMQ()
+
+	// Endpoint WebSocket
+	http.HandleFunc("/ws", handleConnections)
+
+	// Gorutyna rozsyłająca wiadomości do klientów
+	go handleMessages()
+
+	log.Println("Serwer Go z WebSocket na porcie :8080")
+	if err := http.ListenAndServe("localhost:8080", nil); err != nil {
+		log.Fatal("ListenAndServe: ", err)
+	}
+}
+
+func handleConnections(w http.ResponseWriter, r *http.Request) {
+	ws, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println("Upgrade error:", err)
+		return
+	}
+	defer ws.Close()
+
+	clients[ws] = true
+
+	for {
+		// Odbieranie wiadomości od klienta (opcjonalnie)
+		_, msg, err := ws.ReadMessage()
+		if err != nil {
+			log.Println("ReadMessage error:", err)
+			delete(clients, ws)
+			break
+		}
+		log.Printf("Otrzymano od klienta: %s", msg)
+	}
+}
+
+func handleMessages() {
+	for {
+		msg := <-broadcast
+		for client := range clients {
+			err := client.WriteMessage(websocket.TextMessage, []byte(msg))
+			if err != nil {
+				log.Printf("Błąd wysyłania: %v", err)
+				client.Close()
+				delete(clients, client)
+			}
+		}
+	}
+}
+
+func consumeRabbitMQ() {
+	conn, err := amqp.Dial("amqp://user:password@rabbitmq:5672/")
+	if err != nil {
+		log.Fatalf("Błąd połączenia z RabbitMQ: %v", err)
+		panic(err)
+	}
+	defer conn.Close()
+
+	ch, err := conn.Channel()
+	if err != nil {
+		log.Fatalf("Błąd otwarcia kanału: %v", err)
+	}
+	defer ch.Close()
+
+	q, err := ch.QueueDeclare(
+		"task_queue", // nazwa kolejki
+		true,         // trwała
+		false,        // auto-delete
+		false,        // ekskluzywna
+		false,        // no-wait
+		nil,
+	)
+	if err != nil {
+		log.Fatalf("Błąd deklaracji kolejki: %v", err)
+	}
+
+	msgs, err := ch.Consume(
+		q.Name, // nazwa kolejki
+		"",     // konsument
+		true,   // auto-ack
+		false,  // ekskluzywna
+		false,  // no-local
+		false,  // no-wait
+		nil,
+	)
+	if err != nil {
+		log.Fatalf("Błąd konsumpcji: %v", err)
+	}
+
+	for d := range msgs {
+		log.Printf("Otrzymano wiadomość z kolejki: %s", d.Body)
+		// Przesłanie wiadomości do wszystkich podłączonych klientów WebSocket
+		broadcast <- string(d.Body)
+	}
 }

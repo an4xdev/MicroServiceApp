@@ -45,6 +45,21 @@ services:
       - ASPNETCORE_URLS=http://+:80
       - ENABLE_SCALAR=true
     depends_on:
+      - db_manager
+    networks:
+      - mynetwork
+
+  db_manager:
+    build:
+      context: .
+      dockerfile: DatabaseManager/Dockerfile
+    ports:
+      - 8090:80
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ENABLE_SCALAR=true
+    depends_on:
       - database
     networks:
       - mynetwork
@@ -53,19 +68,22 @@ services:
     build:
       context: ./go
       dockerfile: Dockerfile
+    depends_on:
+      - rabbitmq
     networks:
       - mynetwork
 
-  flask:
+  fast_api:
     build:
-      context: ./flask
+      context: ./fast_api
       dockerfile: Dockerfile
     networks:
       - mynetwork
     ports:
-      - 5134:5000
+      - 7070:8000
     depends_on:
       - database
+      - rabbitmq
 
   spring:
     build:
@@ -75,6 +93,8 @@ services:
       - mynetwork
     ports:
       - 2020:8080
+    depends_on:
+      - database
 
   laravel:
     build:
@@ -123,10 +143,36 @@ services:
       POSTGRES_DB: project
     volumes:
       - pgdata:/var/lib/postgresql/data
-
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+    networks:
+      - mynetwork
+  minio:
+    image: quay.io/minio/minio:latest
+    container_name: minio
+    ports:
+      - 9000:9000 # API MinIO (S3)
+      - 9090:9090 # MinIO Console (UI)
+    environment:
+      MINIO_ROOT_USER: admin # Wymagana nazwa użytkownika (login)
+      MINIO_ROOT_PASSWORD: admin123 # Wymagane hasło (min. 8 znaków)
+      MINIO_SERVER_URL: http://localhost:9000 # URL do serwera
+      MINIO_CONSOLE_ADDRESS: ":9090" # Adres dla interfejsu webowego
+    volumes:
+      - minio_data:/data # Przechowywanie danych
+    command: server /data --console-address ":9090"
+    networks:
+      - mynetwork
 networks:
   mynetwork:
     driver: bridge
 
 volumes:
   pgdata:
+  minio_data:
