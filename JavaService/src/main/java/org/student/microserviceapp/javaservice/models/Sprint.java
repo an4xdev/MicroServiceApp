@@ -20,7 +20,6 @@ import java.util.UUID;
 })
 public class Sprint {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "\"Id\"", nullable = false)
     private UUID id;
 

@@ -4,7 +4,6 @@ from sqlalchemy import Date, DateTime, ForeignKeyConstraint, Identity, Index, In
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 import datetime
 import uuid
-from __future__ import annotations
 
 class Base(DeclarativeBase):
     pass
@@ -32,8 +31,6 @@ class TaskStatuses(Base):
     Name: Mapped[str] = mapped_column(Text)
 
     Tasks: Mapped[List['Tasks']] = relationship('Tasks', back_populates='TaskStatuses_')
-    TaskHistories: Mapped[List['TaskHistories']] = relationship('TaskHistories', foreign_keys='[TaskHistories.NewStatusId]', back_populates='TaskStatuses_')
-    TaskHistories_: Mapped[List['TaskHistories']] = relationship('TaskHistories', foreign_keys='[TaskHistories.OldStatusId]', back_populates='TaskStatuses1')
 
 
 class TaskTypes(Base):
@@ -66,6 +63,16 @@ class Users(Base):
 
     Sprints: Mapped[List['Sprints']] = relationship('Sprints', back_populates='Users_')
     Tasks: Mapped[List['Tasks']] = relationship('Tasks', back_populates='Users_')
+
+
+class EFMigrationsHistory(Base):
+    __tablename__ = '__EFMigrationsHistory'
+    __table_args__ = (
+        PrimaryKeyConstraint('MigrationId', name='PK___EFMigrationsHistory'),
+    )
+
+    MigrationId: Mapped[str] = mapped_column(String(150), primary_key=True)
+    ProductVersion: Mapped[str] = mapped_column(String(32))
 
 
 class Projects(Base):
@@ -140,21 +147,15 @@ class Tasks(Base):
 class TaskHistories(Base):
     __tablename__ = 'TaskHistories'
     __table_args__ = (
-        ForeignKeyConstraint(['NewStatusId'], ['TaskStatuses.Id'], ondelete='CASCADE', name='FK_TaskHistories_TaskStatuses_NewStatusId'),
-        ForeignKeyConstraint(['OldStatusId'], ['TaskStatuses.Id'], ondelete='CASCADE', name='FK_TaskHistories_TaskStatuses_OldStatusId'),
         ForeignKeyConstraint(['TaskId'], ['Tasks.Id'], ondelete='CASCADE', name='FK_TaskHistories_Tasks_TaskId'),
         PrimaryKeyConstraint('Id', name='PK_TaskHistories'),
-        Index('IX_TaskHistories_NewStatusId', 'NewStatusId'),
-        Index('IX_TaskHistories_OldStatusId', 'OldStatusId'),
         Index('IX_TaskHistories_TaskId', 'TaskId')
     )
 
     Id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True)
     TaskId: Mapped[uuid.UUID] = mapped_column(Uuid)
     ChangeDate: Mapped[datetime.datetime] = mapped_column(DateTime(True))
-    OldStatusId: Mapped[int] = mapped_column(Integer)
-    NewStatusId: Mapped[int] = mapped_column(Integer)
+    NewStatus: Mapped[str] = mapped_column(Text, server_default=text("''::text"))
+    OldStatus: Mapped[Optional[str]] = mapped_column(Text)
 
-    TaskStatuses_: Mapped['TaskStatuses'] = relationship('TaskStatuses', foreign_keys=[NewStatusId], back_populates='TaskHistories')
-    TaskStatuses1: Mapped['TaskStatuses'] = relationship('TaskStatuses', foreign_keys=[OldStatusId], back_populates='TaskHistories_')
     Tasks_: Mapped['Tasks'] = relationship('Tasks', back_populates='TaskHistories')

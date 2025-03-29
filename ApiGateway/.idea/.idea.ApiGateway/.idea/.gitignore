@@ -16,3 +16,5 @@ discord.xml
 encodings.xml
 indexLayout.xml
 vcs.xml
+dataSources.xml
+sqldialects.xml

@@ -15,7 +15,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $Id
  * @property string $Name
  * 
- * @property Collection|TaskHistory[] $task_histories
  * @property Collection|Task[] $tasks
  *
  * @package App\Models
@@ -29,11 +28,6 @@ class TaskStatus extends Model
 	protected $fillable = [
 		'Name'
 	];
-
-	public function task_histories()
-	{
-		return $this->hasMany(TaskHistory::class, 'NewStatusId');
-	}
 
 	public function tasks()
 	{

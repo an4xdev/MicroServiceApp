@@ -3,6 +3,7 @@ package org.student.microserviceapp.javaservice.models;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -13,9 +14,7 @@ import java.util.UUID;
 @Setter
 @Entity
 @Table(name = "\"TaskHistories\"", schema = "public", indexes = {
-        @Index(name = "IX_TaskHistories_TaskId", columnList = "TaskId"),
-        @Index(name = "IX_TaskHistories_OldStatusId", columnList = "OldStatusId"),
-        @Index(name = "IX_TaskHistories_NewStatusId", columnList = "NewStatusId")
+        @Index(name = "IX_TaskHistories_TaskId", columnList = "TaskId")
 })
 public class TaskHistory {
     @Id
@@ -30,14 +29,11 @@ public class TaskHistory {
     @Column(name = "\"ChangeDate\"", nullable = false)
     private OffsetDateTime changeDate;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "\"OldStatusId\"", nullable = false)
-    private TaskStatus oldStatus;
+    @ColumnDefault("''")
+    @Column(name = "\"NewStatus\"", nullable = false, length = Integer.MAX_VALUE)
+    private String newStatus;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "\"NewStatusId\"", nullable = false)
-    private TaskStatus newStatus;
+    @Column(name = "\"OldStatus\"", length = Integer.MAX_VALUE)
+    private String oldStatus;
 
 }

@@ -15,11 +15,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property uuid $Id
  * @property uuid $TaskId
  * @property Carbon $ChangeDate
- * @property int $OldStatusId
- * @property int $NewStatusId
+ * @property string $NewStatus
+ * @property string|null $OldStatus
  * 
  * @property Task $task
- * @property TaskStatus $task_status
  *
  * @package App\Models
  */
@@ -33,25 +32,18 @@ class TaskHistory extends Model
 	protected $casts = [
 		'Id' => 'uuid',
 		'TaskId' => 'uuid',
-		'ChangeDate' => 'datetime',
-		'OldStatusId' => 'int',
-		'NewStatusId' => 'int'
+		'ChangeDate' => 'datetime'
 	];
 
 	protected $fillable = [
 		'TaskId',
 		'ChangeDate',
-		'OldStatusId',
-		'NewStatusId'
+		'NewStatus',
+		'OldStatus'
 	];
 
 	public function task()
 	{
 		return $this->belongsTo(Task::class, 'TaskId');
-	}
-
-	public function task_status()
-	{
-		return $this->belongsTo(TaskStatus::class, 'NewStatusId');
 	}
 }

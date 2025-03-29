@@ -11,9 +11,7 @@ public class TaskHistory
 
     public DateTime ChangeDate { get; set; }
 
-    public int OldStatusId { get; set; }
-    public TaskStatus OldStatus { get; set; } = null!;
+    public string? OldStatus { get; set; } = string.Empty;
 
-    public int NewStatusId { get; set; }
-    public TaskStatus NewStatus { get; set; } = null!;
+    public string NewStatus { get; set; } = string.Empty;
 }

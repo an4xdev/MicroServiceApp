@@ -27,6 +27,49 @@ docker-compose up --build -d
 
 Api Gateway OpenAPI documentation is available at [here](https://localhost/scalar/v1).
 
-## License
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+## Development Tips
+
+### HTTPS Api Gateway
+
+Follow [Microsoft documentation](https://learn.microsoft.com/en-us/aspnet/core/security/docker-compose-https?view=aspnetcore-9.0)
+
+
+### Automatic migrations
+
+Migrations are managed by `DatabaseService` which is using objects from `SharedObjects` project. It is checking for the latest migration and applying it to the database.
+
+### Automatic model generation from database
+
+NOTE: For Spring project I used Intellij IDEA option from Database tab.
+
+#### Requirements
+
+- [sqlacodegen](https://pypi.org/project/sqlacodegen/)
+- [Reliese laravel](https://github.com/reliese/laravel)
+- [sequelize-auto](https://github.com/sequelize/sequelize-auto) with PostgreSQL dialect
+
+#### Usage
+
+To automatically generate models from database, you can use the following command:
+
+```bash
+# For Windows
+models.bat
+# For Linux !!! NOT TESTED !!!
+chmod +x models.sh
+./models.sh
+```
+
+## Signing Token for JWT
+To generate a signing token for JWT, you can use the following command (or leave my token in the `appsettings.json` files):
+
+```bash
+cd key_generator
+python main.py
+```
+
+Modify the `appsettings.json` files in the `ApiGateway` and `AuthService` projects to use the generated token.
+
+## Licenses
+
 Third party libraries are licensed under their respective licenses see third-party-licenses directory for details.

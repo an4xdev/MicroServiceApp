@@ -18,21 +18,14 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATE,
       allowNull: false
     },
-    OldStatusId: {
-      type: DataTypes.INTEGER,
+    NewStatus: {
+      type: DataTypes.TEXT,
       allowNull: false,
-      references: {
-        model: 'TaskStatuses',
-        key: 'Id'
-      }
+      defaultValue: ""
     },
-    NewStatusId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'TaskStatuses',
-        key: 'Id'
-      }
+    OldStatus: {
+      type: DataTypes.TEXT,
+      allowNull: true
     }
   }, {
     sequelize,
@@ -40,18 +33,6 @@ module.exports = function(sequelize, DataTypes) {
     schema: 'public',
     timestamps: false,
     indexes: [
-      {
-        name: "IX_TaskHistories_NewStatusId",
-        fields: [
-          { name: "NewStatusId" },
-        ]
-      },
-      {
-        name: "IX_TaskHistories_OldStatusId",
-        fields: [
-          { name: "OldStatusId" },
-        ]
-      },
       {
         name: "IX_TaskHistories_TaskId",
         fields: [

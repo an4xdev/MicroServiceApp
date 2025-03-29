@@ -4,8 +4,7 @@ namespace SharedObjects.Models;
 
 public class Project
 {
-    [Key]
-    public Guid Id { get; set; }
+    [Key] public Guid Id { get; set; }
     public string Name { get; set; }
 
     public DateOnly StartDate { get; set; }
