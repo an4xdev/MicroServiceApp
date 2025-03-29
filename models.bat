@@ -4,7 +4,7 @@ sqlacodegen --outfile models.py postgresql://postgres:P%%40ssword123%%21@localho
 cd ..
 
 cd js_express
-.\node_modules\.bin\sequelize-auto -o "./models" -d project -h localhost -u postgres -p 5432 -x P@ssword123! -e postgres
+.\node_modules\.bin\sequelize-auto -o "./models" -d project -h localhost -u postgres -p 5432 -x P@ssword123! -e postgres -l ts
 
 cd ..
 
