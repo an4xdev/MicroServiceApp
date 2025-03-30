@@ -1,7 +1,3 @@
-<!-- got from:
-https://github.com/reliese/laravel 
--->
-
 <?php
 
 return [
