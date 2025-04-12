@@ -3,7 +3,6 @@ package org.student.microserviceapp.javaservice.dto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.student.microserviceapp.javaservice.models.Company;
 import org.student.microserviceapp.javaservice.models.Project;
 
 import java.time.LocalDate;

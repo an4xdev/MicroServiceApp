@@ -2,6 +2,7 @@ import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
 import type { Projects, ProjectsId } from './Projects';
 import type { Tasks, TasksId } from './Tasks';
+import type { Team, TeamId } from './Team';
 import type { Users, UsersId } from './Users';
 
 export interface SprintsAttributes {
@@ -10,12 +11,14 @@ export interface SprintsAttributes {
   StartDate: string;
   EndDate: string;
   ManagerId: string;
-  ProjectId: string;
+  ProjectId?: string;
+  TeamId: string;
 }
 
 export type SprintsPk = "Id";
 export type SprintsId = Sprints[SprintsPk];
-export type SprintsCreationAttributes = SprintsAttributes;
+export type SprintsOptionalAttributes = "ProjectId" | "TeamId";
+export type SprintsCreationAttributes = Optional<SprintsAttributes, SprintsOptionalAttributes>;
 
 export class Sprints extends Model<SprintsAttributes, SprintsCreationAttributes> implements SprintsAttributes {
   Id!: string;
@@ -23,7 +26,8 @@ export class Sprints extends Model<SprintsAttributes, SprintsCreationAttributes>
   StartDate!: string;
   EndDate!: string;
   ManagerId!: string;
-  ProjectId!: string;
+  ProjectId?: string;
+  TeamId!: string;
 
   // Sprints belongsTo Projects via ProjectId
   Project!: Projects;
@@ -42,6 +46,11 @@ export class Sprints extends Model<SprintsAttributes, SprintsCreationAttributes>
   hasTask!: Sequelize.HasManyHasAssociationMixin<Tasks, TasksId>;
   hasTasks!: Sequelize.HasManyHasAssociationsMixin<Tasks, TasksId>;
   countTasks!: Sequelize.HasManyCountAssociationsMixin;
+  // Sprints belongsTo Team via TeamId
+  Team!: Team;
+  getTeam!: Sequelize.BelongsToGetAssociationMixin<Team>;
+  setTeam!: Sequelize.BelongsToSetAssociationMixin<Team, TeamId>;
+  createTeam!: Sequelize.BelongsToCreateAssociationMixin<Team>;
   // Sprints belongsTo Users via ManagerId
   Manager!: Users;
   getManager!: Sequelize.BelongsToGetAssociationMixin<Users>;
@@ -77,9 +86,18 @@ export class Sprints extends Model<SprintsAttributes, SprintsCreationAttributes>
     },
     ProjectId: {
       type: DataTypes.UUID,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: 'Projects',
+        key: 'Id'
+      }
+    },
+    TeamId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      defaultValue: "00000000-0000-0000-0000-000000000000",
+      references: {
+        model: 'Team',
         key: 'Id'
       }
     }
@@ -99,6 +117,12 @@ export class Sprints extends Model<SprintsAttributes, SprintsCreationAttributes>
         name: "IX_Sprints_ProjectId",
         fields: [
           { name: "ProjectId" },
+        ]
+      },
+      {
+        name: "IX_Sprints_TeamId",
+        fields: [
+          { name: "TeamId" },
         ]
       },
       {

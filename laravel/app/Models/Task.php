@@ -36,11 +36,11 @@ class Task extends Model
 	public $timestamps = false;
 
 	protected $casts = [
-		'Id' => 'string',
+		'Id' => 'uuid',
 		'TaskTypeId' => 'int',
 		'TaskStatusId' => 'int',
-		'DeveloperId' => 'string',
-		'SprintId' => 'string'
+		'DeveloperId' => 'uuid',
+		'SprintId' => 'uuid'
 	];
 
 	protected $fillable = [

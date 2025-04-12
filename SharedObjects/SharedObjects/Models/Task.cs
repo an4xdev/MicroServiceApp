@@ -19,7 +19,7 @@ public class Task
     public TaskStatus TaskStatus { get; set; } = null!;
 
     public Guid  DeveloperId { get; set; }
-    public User Developer { get; set; } = null!;
+    public Developer Developer { get; set; } = null!;
 
     public Guid? SprintId { get; set; }
     public Sprint? Sprint { get; set; }

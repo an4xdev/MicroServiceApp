@@ -18,10 +18,12 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $StartDate
  * @property Carbon $EndDate
  * @property uuid $ManagerId
- * @property uuid $ProjectId
+ * @property uuid|null $ProjectId
+ * @property uuid $TeamId
  * 
  * @property User $user
- * @property Project $project
+ * @property Project|null $project
+ * @property Team $team
  * @property Collection|Task[] $tasks
  *
  * @package App\Models
@@ -38,7 +40,8 @@ class Sprint extends Model
 		'StartDate' => 'datetime',
 		'EndDate' => 'datetime',
 		'ManagerId' => 'uuid',
-		'ProjectId' => 'uuid'
+		'ProjectId' => 'uuid',
+		'TeamId' => 'uuid'
 	];
 
 	protected $fillable = [
@@ -46,7 +49,8 @@ class Sprint extends Model
 		'StartDate',
 		'EndDate',
 		'ManagerId',
-		'ProjectId'
+		'ProjectId',
+		'TeamId'
 	];
 
 	public function user()
@@ -57,6 +61,11 @@ class Sprint extends Model
 	public function project()
 	{
 		return $this->belongsTo(Project::class, 'ProjectId');
+	}
+
+	public function team()
+	{
+		return $this->belongsTo(Team::class, 'TeamId');
 	}
 
 	public function tasks()

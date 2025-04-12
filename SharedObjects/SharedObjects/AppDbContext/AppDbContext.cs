@@ -21,6 +21,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             .HasIndex(u=>u.Username)
             .IsUnique();
 
+        modelBuilder.Entity<User>()
+            .HasDiscriminator<string>("Role")
+            .HasValue<User>("User")
+            .HasValue<Developer>("Developer")
+            .HasValue<Manager>("Manager");
+
         base.OnModelCreating(modelBuilder);
     }
 }

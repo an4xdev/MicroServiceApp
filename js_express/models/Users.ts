@@ -2,6 +2,7 @@ import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
 import type { Sprints, SprintsId } from './Sprints';
 import type { Tasks, TasksId } from './Tasks';
+import type { Team, TeamId } from './Team';
 
 export interface UsersAttributes {
   Id: string;
@@ -12,11 +13,12 @@ export interface UsersAttributes {
   RefreshTokenExpiryTime?: Date;
   Avatar?: string;
   PasswordSalt: string;
+  TeamId?: string;
 }
 
 export type UsersPk = "Id";
 export type UsersId = Users[UsersPk];
-export type UsersOptionalAttributes = "RefreshToken" | "RefreshTokenExpiryTime" | "Avatar" | "PasswordSalt";
+export type UsersOptionalAttributes = "RefreshToken" | "RefreshTokenExpiryTime" | "Avatar" | "PasswordSalt" | "TeamId";
 export type UsersCreationAttributes = Optional<UsersAttributes, UsersOptionalAttributes>;
 
 export class Users extends Model<UsersAttributes, UsersCreationAttributes> implements UsersAttributes {
@@ -28,7 +30,13 @@ export class Users extends Model<UsersAttributes, UsersCreationAttributes> imple
   RefreshTokenExpiryTime?: Date;
   Avatar?: string;
   PasswordSalt!: string;
+  TeamId?: string;
 
+  // Users belongsTo Team via TeamId
+  Team_Team!: Team;
+  getTeam_Team!: Sequelize.BelongsToGetAssociationMixin<Team>;
+  setTeam_Team!: Sequelize.BelongsToSetAssociationMixin<Team, TeamId>;
+  createTeam_Team!: Sequelize.BelongsToCreateAssociationMixin<Team>;
   // Users hasMany Sprints via ManagerId
   Sprints!: Sprints[];
   getSprints!: Sequelize.HasManyGetAssociationsMixin<Sprints>;
@@ -53,6 +61,18 @@ export class Users extends Model<UsersAttributes, UsersCreationAttributes> imple
   hasTask!: Sequelize.HasManyHasAssociationMixin<Tasks, TasksId>;
   hasTasks!: Sequelize.HasManyHasAssociationsMixin<Tasks, TasksId>;
   countTasks!: Sequelize.HasManyCountAssociationsMixin;
+  // Users hasMany Team via ManagerId
+  Teams!: Team[];
+  getTeams!: Sequelize.HasManyGetAssociationsMixin<Team>;
+  setTeams!: Sequelize.HasManySetAssociationsMixin<Team, TeamId>;
+  addTeam!: Sequelize.HasManyAddAssociationMixin<Team, TeamId>;
+  addTeams!: Sequelize.HasManyAddAssociationsMixin<Team, TeamId>;
+  createTeam!: Sequelize.HasManyCreateAssociationMixin<Team>;
+  removeTeam!: Sequelize.HasManyRemoveAssociationMixin<Team, TeamId>;
+  removeTeams!: Sequelize.HasManyRemoveAssociationsMixin<Team, TeamId>;
+  hasTeam!: Sequelize.HasManyHasAssociationMixin<Team, TeamId>;
+  hasTeams!: Sequelize.HasManyHasAssociationsMixin<Team, TeamId>;
+  countTeams!: Sequelize.HasManyCountAssociationsMixin;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof Users {
     return Users.init({
@@ -70,7 +90,7 @@ export class Users extends Model<UsersAttributes, UsersCreationAttributes> imple
       allowNull: false
     },
     Role: {
-      type: DataTypes.TEXT,
+      type: DataTypes.STRING(13),
       allowNull: false
     },
     RefreshToken: {
@@ -89,6 +109,14 @@ export class Users extends Model<UsersAttributes, UsersCreationAttributes> imple
       type: DataTypes.TEXT,
       allowNull: false,
       defaultValue: ""
+    },
+    TeamId: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: {
+        model: 'Team',
+        key: 'Id'
+      }
     }
   }, {
     sequelize,
@@ -96,6 +124,12 @@ export class Users extends Model<UsersAttributes, UsersCreationAttributes> imple
     schema: 'public',
     timestamps: false,
     indexes: [
+      {
+        name: "IX_Users_TeamId",
+        fields: [
+          { name: "TeamId" },
+        ]
+      },
       {
         name: "IX_Users_Username",
         unique: true,

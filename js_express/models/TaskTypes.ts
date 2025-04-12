@@ -3,7 +3,7 @@ import { DataTypes, Model, Optional } from 'sequelize';
 import type { Tasks, TasksId } from './Tasks';
 
 export interface TaskTypesAttributes {
-  Id?: number;
+  Id: number;
   Name: string;
 }
 

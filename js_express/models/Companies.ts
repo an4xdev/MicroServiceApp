@@ -3,7 +3,7 @@ import { DataTypes, Model, Optional } from 'sequelize';
 import type { Projects, ProjectsId } from './Projects';
 
 export interface CompaniesAttributes {
-  Id?: number;
+  Id: number;
   Name: string;
 }
 

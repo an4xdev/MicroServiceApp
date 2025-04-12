@@ -13,6 +13,8 @@ import { TaskTypes as _TaskTypes } from "./TaskTypes";
 import type { TaskTypesAttributes, TaskTypesCreationAttributes } from "./TaskTypes";
 import { Tasks as _Tasks } from "./Tasks";
 import type { TasksAttributes, TasksCreationAttributes } from "./Tasks";
+import { Team as _Team } from "./Team";
+import type { TeamAttributes, TeamCreationAttributes } from "./Team";
 import { Users as _Users } from "./Users";
 import type { UsersAttributes, UsersCreationAttributes } from "./Users";
 import { __EFMigrationsHistory as ___EFMigrationsHistory } from "./__EFMigrationsHistory";
@@ -26,6 +28,7 @@ export {
   _TaskStatuses as TaskStatuses,
   _TaskTypes as TaskTypes,
   _Tasks as Tasks,
+  _Team as Team,
   _Users as Users,
   ___EFMigrationsHistory as __EFMigrationsHistory,
 };
@@ -45,6 +48,8 @@ export type {
   TaskTypesCreationAttributes,
   TasksAttributes,
   TasksCreationAttributes,
+  TeamAttributes,
+  TeamCreationAttributes,
   UsersAttributes,
   UsersCreationAttributes,
   __EFMigrationsHistoryAttributes,
@@ -59,6 +64,7 @@ export function initModels(sequelize: Sequelize) {
   const TaskStatuses = _TaskStatuses.initModel(sequelize);
   const TaskTypes = _TaskTypes.initModel(sequelize);
   const Tasks = _Tasks.initModel(sequelize);
+  const Team = _Team.initModel(sequelize);
   const Users = _Users.initModel(sequelize);
   const __EFMigrationsHistory = ___EFMigrationsHistory.initModel(sequelize);
 
@@ -74,10 +80,16 @@ export function initModels(sequelize: Sequelize) {
   TaskTypes.hasMany(Tasks, { as: "Tasks", foreignKey: "TaskTypeId"});
   TaskHistories.belongsTo(Tasks, { as: "Task", foreignKey: "TaskId"});
   Tasks.hasMany(TaskHistories, { as: "TaskHistories", foreignKey: "TaskId"});
+  Sprints.belongsTo(Team, { as: "Team", foreignKey: "TeamId"});
+  Team.hasMany(Sprints, { as: "Sprints", foreignKey: "TeamId"});
+  Users.belongsTo(Team, { as: "Team_Team", foreignKey: "TeamId"});
+  Team.hasMany(Users, { as: "Users", foreignKey: "TeamId"});
   Sprints.belongsTo(Users, { as: "Manager", foreignKey: "ManagerId"});
   Users.hasMany(Sprints, { as: "Sprints", foreignKey: "ManagerId"});
   Tasks.belongsTo(Users, { as: "Developer", foreignKey: "DeveloperId"});
   Users.hasMany(Tasks, { as: "Tasks", foreignKey: "DeveloperId"});
+  Team.belongsTo(Users, { as: "Manager", foreignKey: "ManagerId"});
+  Users.hasMany(Team, { as: "Teams", foreignKey: "ManagerId"});
 
   return {
     Companies: Companies,
@@ -87,6 +99,7 @@ export function initModels(sequelize: Sequelize) {
     TaskStatuses: TaskStatuses,
     TaskTypes: TaskTypes,
     Tasks: Tasks,
+    Team: Team,
     Users: Users,
     __EFMigrationsHistory: __EFMigrationsHistory,
   };

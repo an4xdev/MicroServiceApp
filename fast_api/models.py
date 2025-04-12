@@ -45,22 +45,44 @@ class TaskTypes(Base):
     Tasks: Mapped[List['Tasks']] = relationship('Tasks', back_populates='TaskTypes_')
 
 
+class Team(Base):
+    __tablename__ = 'Team'
+    __table_args__ = (
+        ForeignKeyConstraint(['ManagerId'], ['Users.Id'], ondelete='CASCADE', name='FK_Team_Users_ManagerId'),
+        PrimaryKeyConstraint('Id', name='PK_Team'),
+        Index('IX_Team_ManagerId', 'ManagerId')
+    )
+
+    Id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True)
+    Name: Mapped[str] = mapped_column(Text)
+    ManagerId: Mapped[uuid.UUID] = mapped_column(Uuid)
+
+    Users: Mapped['Users'] = relationship('Users', foreign_keys=[ManagerId], back_populates='Team_')
+    Users_: Mapped[List['Users']] = relationship('Users', foreign_keys='[Users.TeamId]', back_populates='Team1')
+    Sprints: Mapped[List['Sprints']] = relationship('Sprints', back_populates='Team_')
+
+
 class Users(Base):
     __tablename__ = 'Users'
     __table_args__ = (
+        ForeignKeyConstraint(['TeamId'], ['Team.Id'], name='FK_Users_Team_TeamId'),
         PrimaryKeyConstraint('Id', name='PK_Users'),
+        Index('IX_Users_TeamId', 'TeamId'),
         Index('IX_Users_Username', 'Username', unique=True)
     )
 
     Id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True)
     Username: Mapped[str] = mapped_column(Text)
     PasswordHash: Mapped[str] = mapped_column(Text)
-    Role: Mapped[str] = mapped_column(Text)
+    Role: Mapped[str] = mapped_column(String(13))
     PasswordSalt: Mapped[str] = mapped_column(Text, server_default=text("''::text"))
     RefreshToken: Mapped[Optional[str]] = mapped_column(Text)
     RefreshTokenExpiryTime: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(True))
     Avatar: Mapped[Optional[str]] = mapped_column(Text)
+    TeamId: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid)
 
+    Team_: Mapped[List['Team']] = relationship('Team', foreign_keys='[Team.ManagerId]', back_populates='Users')
+    Team1: Mapped[Optional['Team']] = relationship('Team', foreign_keys=[TeamId], back_populates='Users_')
     Sprints: Mapped[List['Sprints']] = relationship('Sprints', back_populates='Users_')
     Tasks: Mapped[List['Tasks']] = relationship('Tasks', back_populates='Users_')
 
@@ -97,10 +119,12 @@ class Sprints(Base):
     __tablename__ = 'Sprints'
     __table_args__ = (
         ForeignKeyConstraint(['ManagerId'], ['Users.Id'], ondelete='CASCADE', name='FK_Sprints_Users_ManagerId'),
-        ForeignKeyConstraint(['ProjectId'], ['Projects.Id'], ondelete='CASCADE', name='FK_Sprints_Projects_ProjectId'),
+        ForeignKeyConstraint(['ProjectId'], ['Projects.Id'], name='FK_Sprints_Projects_ProjectId'),
+        ForeignKeyConstraint(['TeamId'], ['Team.Id'], ondelete='CASCADE', name='FK_Sprints_Team_TeamId'),
         PrimaryKeyConstraint('Id', name='PK_Sprints'),
         Index('IX_Sprints_ManagerId', 'ManagerId'),
-        Index('IX_Sprints_ProjectId', 'ProjectId')
+        Index('IX_Sprints_ProjectId', 'ProjectId'),
+        Index('IX_Sprints_TeamId', 'TeamId')
     )
 
     Id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True)
@@ -108,10 +132,12 @@ class Sprints(Base):
     StartDate: Mapped[datetime.date] = mapped_column(Date)
     EndDate: Mapped[datetime.date] = mapped_column(Date)
     ManagerId: Mapped[uuid.UUID] = mapped_column(Uuid)
-    ProjectId: Mapped[uuid.UUID] = mapped_column(Uuid)
+    TeamId: Mapped[uuid.UUID] = mapped_column(Uuid, server_default=text("'00000000-0000-0000-0000-000000000000'::uuid"))
+    ProjectId: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid)
 
     Users_: Mapped['Users'] = relationship('Users', back_populates='Sprints')
-    Projects_: Mapped['Projects'] = relationship('Projects', back_populates='Sprints')
+    Projects_: Mapped[Optional['Projects']] = relationship('Projects', back_populates='Sprints')
+    Team_: Mapped['Team'] = relationship('Team', back_populates='Sprints')
     Tasks: Mapped[List['Tasks']] = relationship('Tasks', back_populates='Sprints_')
 
 

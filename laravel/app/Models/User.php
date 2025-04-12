@@ -21,9 +21,12 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon|null $RefreshTokenExpiryTime
  * @property string|null $Avatar
  * @property string $PasswordSalt
+ * @property uuid|null $TeamId
  * 
- * @property Collection|Task[] $tasks
+ * @property Team|null $team
+ * @property Collection|Team[] $teams
  * @property Collection|Sprint[] $sprints
+ * @property Collection|Task[] $tasks
  *
  * @package App\Models
  */
@@ -36,7 +39,8 @@ class User extends Model
 
 	protected $casts = [
 		'Id' => 'uuid',
-		'RefreshTokenExpiryTime' => 'datetime'
+		'RefreshTokenExpiryTime' => 'datetime',
+		'TeamId' => 'uuid'
 	];
 
 	protected $fillable = [
@@ -46,16 +50,27 @@ class User extends Model
 		'RefreshToken',
 		'RefreshTokenExpiryTime',
 		'Avatar',
-		'PasswordSalt'
+		'PasswordSalt',
+		'TeamId'
 	];
 
-	public function tasks()
+	public function team()
 	{
-		return $this->hasMany(Task::class, 'DeveloperId');
+		return $this->belongsTo(Team::class, 'TeamId');
+	}
+
+	public function teams()
+	{
+		return $this->hasMany(Team::class, 'ManagerId');
 	}
 
 	public function sprints()
 	{
 		return $this->hasMany(Sprint::class, 'ManagerId');
+	}
+
+	public function tasks()
+	{
+		return $this->hasMany(Task::class, 'DeveloperId');
 	}
 }

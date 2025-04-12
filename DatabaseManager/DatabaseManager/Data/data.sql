@@ -3,7 +3,7 @@
     DO $$
     BEGIN
         IF EXISTS (
-                                                                                                                                SELECT 1
+        SELECT 1
             FROM public."Companies"
         UNION ALL
             SELECT 1
@@ -26,9 +26,12 @@
         UNION ALL
             SELECT 1
             FROM public."TaskHistories"
+        UNION ALL
+            SELECT  1
+            FROM public."Team"
     ) THEN
         TRUNCATE TABLE public."TaskHistories"
-        , public."Tasks", public."Sprints", public."Projects", public."Companies", public."TaskStatuses", public."TaskTypes", public."Users" RESTART IDENTITY CASCADE;
+        , public."Tasks", public."Sprints", public."Projects", public."Companies", public."TaskStatuses", public."TaskTypes", public."Users", public."Team" RESTART IDENTITY CASCADE;
 END
 IF;
 END $$;
@@ -47,16 +50,23 @@ VALUES
 INSERT INTO public."Users"
     ("Id", "Username", "PasswordHash", "Role", "RefreshToken", "RefreshTokenExpiryTime", "Avatar", "PasswordSalt")
 VALUES
-    ('0195e20a-c2a2-7f9a-8719-e007bf497889', 'dev1', 'AQAAAAIAAYagAAAAECTGa9X4fItKgF1xmZzJSrHqtIBjEVRJVnZDpbDcjfEf0JG8+3YXV0k20cWH8ID9Nw==', 'user', NULL, NULL, NULL, '5b1Qbyx8gqO0ymPhj5N1Ng=='),
-    ('0195e20a-d6c9-7cdc-ae6e-750db8a3b69f', 'dev2', 'AQAAAAIAAYagAAAAEKXOufPcJAyhhZNrqHsAjNXp1rthb6oHsOxOCVF+lfbM2dzqHTefJl9I/9sfY+ZrZw==', 'user', NULL, NULL, NULL, 'FLvWhqaLp2DwxjWGAn/T7g=='),
-    ('0195e20a-ebc0-7b68-ba97-26bdd43964db', 'dev3', 'AQAAAAIAAYagAAAAEFGPxNh4HtKmngpGi9oMXKzMdDv09qumupRabxl6ZBfNdutlUtNhbIFH4D9bOtToNw==', 'user', NULL, NULL, NULL, '9SiIrdY8AI0iPDLsyjk7ew=='),
-    ('0195e20a-fb84-747f-9e4d-356496149d8f', 'dev4', 'AQAAAAIAAYagAAAAEBHqTlyEpDoIx3KlnAT3IMm0iUpi79xsjr/+W7HhxVYukF8J6wZskiGpAkUc+/aSSg==', 'user', NULL, NULL, NULL, 'zqKWb1TMJPK8KMDXV85ktg=='),
-    ('0195e20b-0b19-7715-86b9-77cd57423373', 'dev5', 'AQAAAAIAAYagAAAAEH7bF+BcWWKbVneacKuJuSADrBjOWYJ3RcXmpNfADf7S+wVokuKmRM4hiYJP9tRBBw==', 'user', NULL, NULL, NULL, 'IcVJNuI1hmM0hSomqS5TpA=='),
-    ('0195e20b-1bfc-7c5b-889d-ac6238b88dd8', 'dev6', 'AQAAAAIAAYagAAAAELZhguZpaoDZPdTcQy6QRoyHC/q/XpttiE36DtsJDXXvcPN1VPOPqPXtTqiPNYHkIQ==', 'user', NULL, NULL, NULL, 'Y4IINTwnpvspW1NrHN4J9g=='),
-    ('0195e20b-2bb7-77ba-80a5-b5d1364c0774', 'dev7', 'AQAAAAIAAYagAAAAEGLtTQr0QH+EEtRnEj0CKSfiNfyOF4kqEnBBEklwGdv9/hbFfxPTlbaIlcjfZc6XrQ==', 'user', NULL, NULL, NULL, 'WBYSSIACTwF+YFl9LpVXpw=='),
     ('0195e1ef-eda3-7e5f-9a9f-d6101c9b4644', 'admin', 'AQAAAAIAAYagAAAAEERnDpmaSjlgrKBSE8z5bsKAgjKlb7kgYPcKjkqvpd27eHwczHSVGGitt9d6o2chXQ==', 'admin', NULL, NULL, NULL, 'B2hHREYo6T4CeXZkEwThMw=='),
     ('0195e20a-5055-7d77-a247-f093aded8758', 'manager1', 'AQAAAAIAAYagAAAAEGjuAs1ukAUbY+mLlcS+L4QT1FS40ATP597z3q9FvLTD813+EXV8SiAHhA8pzawJeg==', 'manager', NULL, NULL, NULL, 'WtWWjxcM/DRZIgBNAPr4xQ=='),
     ('0195e20a-6f95-7713-9e4b-bb21508c9270', 'manager2', 'AQAAAAIAAYagAAAAEDieevQa4rEOonp5WjjRTJvU0JM0BfGIng2ZKgBvdv7Dnm2GOR06eRGm/vZmrBuoIA==', 'manager', NULL, NULL, NULL, 'y3hxZZWdBZ3n4M2RDJabfA==');
+
+INSERT INTO public."Team"
+("Id", "Name", "ManagerId")
+VALUES
+    ('e2260dac-3823-41e7-a607-c6a94d19236b', 'Team 1', '0195e20a-5055-7d77-a247-f093aded8758'),
+    ('7a9871da-345c-4223-a7d4-1657f0dcdf5a', 'Team 2', '0195e20a-6f95-7713-9e4b-bb21508c9270');
+
+INSERT INTO public."Users"("Id", "Username", "PasswordHash", "Role", "RefreshToken", "RefreshTokenExpiryTime", "Avatar","PasswordSalt", "TeamId") VALUES ('0195e20a-c2a2-7f9a-8719-e007bf497889', 'dev1', 'AQAAAAIAAYagAAAAECTGa9X4fItKgF1xmZzJSrHqtIBjEVRJVnZDpbDcjfEf0JG8+3YXV0k20cWH8ID9Nw==', 'user', NULL, NULL, NULL, '5b1Qbyx8gqO0ymPhj5N1Ng==', 'e2260dac-3823-41e7-a607-c6a94d19236b'),
+                                                                                                                                          ('0195e20a-d6c9-7cdc-ae6e-750db8a3b69f', 'dev2', 'AQAAAAIAAYagAAAAEKXOufPcJAyhhZNrqHsAjNXp1rthb6oHsOxOCVF+lfbM2dzqHTefJl9I/9sfY+ZrZw==', 'user', NULL, NULL, NULL, 'FLvWhqaLp2DwxjWGAn/T7g==', 'e2260dac-3823-41e7-a607-c6a94d19236b'),
+                                                                                                                                          ('0195e20a-ebc0-7b68-ba97-26bdd43964db', 'dev3', 'AQAAAAIAAYagAAAAEFGPxNh4HtKmngpGi9oMXKzMdDv09qumupRabxl6ZBfNdutlUtNhbIFH4D9bOtToNw==', 'user', NULL, NULL, NULL, '9SiIrdY8AI0iPDLsyjk7ew==', 'e2260dac-3823-41e7-a607-c6a94d19236b'),
+                                                                                                                                          ('0195e20a-fb84-747f-9e4d-356496149d8f', 'dev4', 'AQAAAAIAAYagAAAAEBHqTlyEpDoIx3KlnAT3IMm0iUpi79xsjr/+W7HhxVYukF8J6wZskiGpAkUc+/aSSg==', 'user', NULL, NULL, NULL, 'zqKWb1TMJPK8KMDXV85ktg==', 'e2260dac-3823-41e7-a607-c6a94d19236b'),
+                                                                                                                                          ('0195e20b-0b19-7715-86b9-77cd57423373', 'dev5', 'AQAAAAIAAYagAAAAEH7bF+BcWWKbVneacKuJuSADrBjOWYJ3RcXmpNfADf7S+wVokuKmRM4hiYJP9tRBBw==', 'user', NULL, NULL, NULL, 'IcVJNuI1hmM0hSomqS5TpA==', '7a9871da-345c-4223-a7d4-1657f0dcdf5a'),
+                                                                                                                                          ('0195e20b-1bfc-7c5b-889d-ac6238b88dd8', 'dev6', 'AQAAAAIAAYagAAAAELZhguZpaoDZPdTcQy6QRoyHC/q/XpttiE36DtsJDXXvcPN1VPOPqPXtTqiPNYHkIQ==', 'user', NULL, NULL, NULL, 'Y4IINTwnpvspW1NrHN4J9g==', '7a9871da-345c-4223-a7d4-1657f0dcdf5a'),
+                                                                                                                                          ('0195e20b-2bb7-77ba-80a5-b5d1364c0774', 'dev7', 'AQAAAAIAAYagAAAAEGLtTQr0QH+EEtRnEj0CKSfiNfyOF4kqEnBBEklwGdv9/hbFfxPTlbaIlcjfZc6XrQ==', 'user', NULL, NULL, NULL, 'WBYSSIACTwF+YFl9LpVXpw==', '7a9871da-345c-4223-a7d4-1657f0dcdf5a');
 
 INSERT INTO public."TaskStatuses"
     ("Id", "Name")
@@ -77,10 +87,10 @@ VALUES
     (5, 'Task');
 
 INSERT INTO public."Sprints"
-    ("Id", "Name", "StartDate", "EndDate", "ManagerId", "ProjectId")
+    ("Id", "Name", "StartDate", "EndDate", "ManagerId", "TeamId")
 VALUES
-    ('6407002c-e35a-4b18-a5a1-8a886d0c3b78', 'Sprint 1', '2025-01-10', '2025-01-24', '0195e20a-5055-7d77-a247-f093aded8758', '7cb4ca9b-d493-4db5-b62d-89f4a737ad48'),
-    ('ee5cc4ce-a7a9-4a78-9706-8658e2e72947', 'Sprint 2', '2025-02-05', '2025-02-19', '0195e20a-6f95-7713-9e4b-bb21508c9270', 'e68a0c61-874b-459a-b58e-42b0be1359a6');
+    ('6407002c-e35a-4b18-a5a1-8a886d0c3b78', 'Sprint 1', '2025-01-10', '2025-01-24', '0195e20a-5055-7d77-a247-f093aded8758', 'e2260dac-3823-41e7-a607-c6a94d19236b'),
+    ('ee5cc4ce-a7a9-4a78-9706-8658e2e72947', 'Sprint 2', '2025-02-05', '2025-02-19', '0195e20a-6f95-7713-9e4b-bb21508c9270', '7a9871da-345c-4223-a7d4-1657f0dcdf5a');
 
 INSERT INTO public."Tasks"
     ("Id", "Name", "Description", "TaskTypeId", "TaskStatusId", "DeveloperId", "SprintId")

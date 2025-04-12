@@ -21,10 +21,9 @@ for attempt in range(5):
         break
     except Exception as e:
         print(f"Attempt {attempt + 1} failed: {e}")
-        if attempt < 4:
-            time.sleep(2)
-        else:
+        if attempt > 4:
             raise RuntimeError("Failed to connect to RabbitMQ after 5 attempts. Please check the connection parameters.")
+        time.sleep(2)
 
 if connection is None:
     raise RuntimeError("Connection to RabbitMQ was not established.")
