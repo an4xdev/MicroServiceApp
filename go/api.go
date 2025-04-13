@@ -75,7 +75,8 @@ func consumeRabbitMQ() {
 			break
 		}
 		log.Printf("Connection to RabbitMQ failed, attempt %d: %v", i+1, err)
-		time.Sleep(2 * time.Second)
+		log.Printf("Retrying in 5 seconds...")
+		time.Sleep(5 * time.Second)
 	}
 
 	if err != nil {

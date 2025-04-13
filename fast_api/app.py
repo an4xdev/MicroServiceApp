@@ -23,12 +23,21 @@ for attempt in range(5):
         print(f"Attempt {attempt + 1} failed: {e}")
         if attempt > 4:
             raise RuntimeError("Failed to connect to RabbitMQ after 5 attempts. Please check the connection parameters.")
-        time.sleep(2)
+        print("Retrying in 5 seconds...")
+        time.sleep(5)
 
 if connection is None:
     raise RuntimeError("Connection to RabbitMQ was not established.")
 channel = connection.channel()
 channel.queue_declare(queue='task_queue', durable=True)
+
+@app.get("/api/test")
+def test():
+    return "Hello, World from FastAPI!"
+
+@app.get("/api/error")
+def error():
+    raise HTTPException(status_code=400, detail="Fake wrong request")
 
 @app.post("/send/")
 def send_message(task: str):

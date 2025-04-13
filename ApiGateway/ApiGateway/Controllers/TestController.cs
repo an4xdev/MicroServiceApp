@@ -1,31 +1,27 @@
+using ApiGateway.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ApiGateway.Controllers
+namespace ApiGateway.Controllers;
+
+[ApiController]
+[Route("[controller]")]
+public class TestController(ISendRequestService requestService) : ControllerBase
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class TestController(IHttpClientFactory httpClientFactory) : ControllerBase
+    [HttpGet("fast_api")]
+    public async Task<ActionResult<string>> Flask()
     {
-        // [HttpGet("flask")]
-        // public async Task<ActionResult<FlaskTest>> Flask()
-        // {
-        //     try
-        //     {
-        //         // Tworzenie klienta HTTP
-        //         var client = httpClientFactory.CreateClient();
-        //
-        //         // Wysyłanie żądania POST do serwisu autoryzacji
-        //         var response = await client.GetFromJsonAsync<FlaskTest>("http://flask:5000/data");
-        //
-        //         // Zwrócenie odpowiedzi
-        //         return Ok(response);
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         Console.WriteLine(ex.Message);
-        //         // Obsługa błędów (np. brak połączenia, problemy sieciowe)
-        //         return StatusCode(500, $"An error occurred: {ex.Message}");
-        //     }
-        // }
+        return await requestService.SendRequestAsync<string>(HttpMethod.Get, "/test", ServiceType.FastApiService);
+    }
+
+    [HttpGet("fast_api_error")]
+    public async Task<ActionResult<string>> FlaskError()
+    {
+        return await requestService.SendRequestAsync<string>(HttpMethod.Get, "/error", ServiceType.FastApiService);
+    }
+
+    [HttpGet("test_error_method")]
+    public async Task<ActionResult<string>> TestMethod()
+    {
+        return await requestService.SendRequestAsync<string>(HttpMethod.Get, "https://foo:8080/bar/baz", (ServiceType)8080);
     }
 }
