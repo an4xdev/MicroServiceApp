@@ -1,11 +1,10 @@
 package org.student.microserviceapp.javaservice.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.student.microserviceapp.javaservice.dto.CreateProjectDto;
-import org.student.microserviceapp.javaservice.dto.ProjectDto;
-import org.student.microserviceapp.javaservice.services.company.CompanyService;
-import org.student.microserviceapp.javaservice.services.project.ProjectService;
+import org.student.microserviceapp.javaservice.dto.CreateProjectDTO;
+import org.student.microserviceapp.javaservice.dto.ProjectDTO;
+import org.student.microserviceapp.javaservice.services.company.ICompanyService;
+import org.student.microserviceapp.javaservice.services.project.IProjectService;
 
 import java.util.List;
 import java.util.UUID;
@@ -14,40 +13,42 @@ import java.util.UUID;
 @RequestMapping("/api/projects")
 public class ProjectController {
 
-    private final ProjectService projectService;
-    private final CompanyService companyService;
+    private final IProjectService projectService;
+    private final ICompanyService companyService;
 
-    public ProjectController(ProjectService projectService, CompanyService companyService) {
+    public ProjectController(IProjectService projectService,
+                             ICompanyService companyService) {
         this.projectService = projectService;
         this.companyService = companyService;
     }
 
-    @PostMapping
-    public UUID createProject(CreateProjectDto createProjectDto) {
-        // TODO: implement createProject
-        return UUID.randomUUID();
-    }
-
     @GetMapping
-    public List<ProjectDto> getProjects() {
+    public List<ProjectDTO> getProjects() {
         // TODO: implement getProjects
-        return List.of(new ProjectDto(null));
+        return projectService.getAllProjects();
     }
 
     @GetMapping("/{id}")
-    public ProjectDto getProject(@PathVariable UUID id) {
+    public ProjectDTO getProject(@PathVariable UUID id) {
         // TODO: implement getProject
-        return new ProjectDto(null);
+        return projectService.getProjectById(id);
+    }
+
+    @PostMapping
+    public UUID createProject(CreateProjectDTO createProjectDto) {
+        // TODO: implement createProject
+        return projectService.createProject(createProjectDto);
     }
 
     @PutMapping("/{id}")
-    public ProjectDto updateProject(@PathVariable UUID id, @RequestBody CreateProjectDto projectDto) {
+    public ProjectDTO updateProject(@PathVariable UUID id, @RequestBody CreateProjectDTO createProjectDTO) {
         // TODO: implement updateProject
-        return projectDto.toProjectDto();
+        return projectService.updateProject(id, createProjectDTO);
     }
 
     @DeleteMapping("/{id}")
     public void deleteProject(@PathVariable UUID id) {
         // TODO: implement deleteProject
+        projectService.deleteProject(id);
     }
 }

@@ -19,7 +19,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Add services to the container.
+// TODO: think later on minimal api?
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();

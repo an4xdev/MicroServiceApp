@@ -81,21 +81,4 @@ class TaskController extends Controller
             'status' => 200,
         ]);
     }
-
-    /**
-     * Assign a task to a project.
-     */
-    public function assignTaskToProject(Request $request, Task $task)
-    {
-        $request->validate([
-            'project_id' => 'required|exists:projects,id',
-        ]);
-        $task->project_id = $request->project_id;
-        $task->save();
-        return response()->json([
-            'message' => 'Task assigned to project successfully',
-            'data' => $task,
-            'status' => 200,
-        ]);
-    }
 }

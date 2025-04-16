@@ -11,7 +11,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ProjectDto {
+public class ProjectDTO {
 
     private UUID id;
 
@@ -25,14 +25,14 @@ public class ProjectDto {
     private LocalDate endDate;
 
 
-    private CompanyDto companyDto;
+    private CompanyDTO companyDto;
 
-    public ProjectDto(Project project){
+    public ProjectDTO(Project project){
         id = project.getId();
         name = project.getName();
         startDate = project.getStartDate();
         endDate = project.getEndDate();
-        companyDto = new CompanyDto(project.getCompany());
+        companyDto = new CompanyDTO(project.getCompany());
     }
 
 }

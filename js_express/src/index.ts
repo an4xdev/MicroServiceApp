@@ -37,12 +37,7 @@ const sequelize = new Sequelize(process.env.DATABASE_URL || "postgres://postgres
 
 const models = initModels(sequelize);
 
-app.get("/test", (req, res) => {
-  res.json({
-    message: "Hello from Express!",
-    timestamp: new Date().toISOString(),
-  });
-});
+// Task Types
 
 /**
  * @openapi
@@ -138,6 +133,8 @@ app.delete("/api/taskTypes/:id", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+// Companies
 
 app.get("/api/companies", async (req, res) => {
   const { Companies } = models;

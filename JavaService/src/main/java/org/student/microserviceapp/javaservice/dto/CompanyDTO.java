@@ -4,13 +4,13 @@ import lombok.Getter;
 import org.student.microserviceapp.javaservice.models.Company;
 
 @Getter
-public class CompanyDto {
+public class CompanyDTO {
 
     private final Integer id;
 
     private final String name;
 
-    public CompanyDto(Company company) {
+    public CompanyDTO(Company company) {
         id = company.getId();
         name = company.getName();
     }
