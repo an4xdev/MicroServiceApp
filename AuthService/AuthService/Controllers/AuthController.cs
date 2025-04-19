@@ -1,12 +1,13 @@
 using SharedObjects.DTOs;
 using SharedObjects.Models;
 using AuthService.Services;
+using AuthService.Services.Auth;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuthService.Controllers
 {
-    [Route("[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class AuthController(IAuthService authService) : ControllerBase
     {
         [HttpPost("register")]

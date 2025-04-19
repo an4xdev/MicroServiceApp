@@ -10,13 +10,12 @@ namespace ApiGateway.Controllers;
 [Route("[controller]")]
 public class AuthController(ISendRequestService sendRequestService) : ControllerBase
 {
-    // TODO: check paths for request
     [Authorize(AuthenticationSchemes = "Bearer")]
     [Authorize(Roles = "admin")]
     [HttpPost("register")]
     public async Task<ActionResult<User>> Register(UserDto request)
     {
-        return await sendRequestService.SendRequestAsync<User>(HttpMethod.Post, "auth/register", ServiceType.AuthService, request);
+        return await sendRequestService.SendRequestAsync<User>(HttpMethod.Post, "/auth/register", ServiceType.AuthService, body:request);
         // try
         // {
         //     var client = httpClientFactory.CreateClient();
@@ -46,7 +45,7 @@ public class AuthController(ISendRequestService sendRequestService) : Controller
     public async Task<ActionResult<TokenResponseDto>> Login(UserDto request)
     {
 
-        return await sendRequestService.SendRequestAsync<TokenResponseDto>(HttpMethod.Post, "auth/login", ServiceType.AuthService, request);
+        return await sendRequestService.SendRequestAsync<TokenResponseDto>(HttpMethod.Post, "/auth/login", ServiceType.AuthService, body:request);
         // try
         // {
         //     var client = httpClientFactory.CreateClient();
@@ -75,7 +74,7 @@ public class AuthController(ISendRequestService sendRequestService) : Controller
     [HttpPost("refresh-token")]
     public async Task<ActionResult<TokenResponseDto>> RefreshToken(RefreshTokenRequestDto request)
     {
-        return await sendRequestService.SendRequestAsync<TokenResponseDto>(HttpMethod.Post, "auth/refresh-token", ServiceType.AuthService, request);
+        return await sendRequestService.SendRequestAsync<TokenResponseDto>(HttpMethod.Post, "/auth/refresh-token", ServiceType.AuthService, body:request);
         // try
         // {
         //     var client = httpClientFactory.CreateClient();

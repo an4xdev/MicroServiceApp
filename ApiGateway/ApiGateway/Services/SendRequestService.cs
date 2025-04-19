@@ -9,7 +9,12 @@ public class SendRequestService(IHttpClientFactory httpClientFactory, HybridCach
 
     private static string CombinePath(ServiceType serviceType, string endpoint) => $"{serviceType.GetHost()}{endpoint}";
 
-    public async Task<ActionResult<T>> SendRequestAsync<T>(HttpMethod method, string endpoint, ServiceType serviceType, object? body = null)
+    public async Task<ActionResult<T>> SendRequestAsync<T>(
+        HttpMethod method,
+        string endpoint,
+        ServiceType serviceType,
+        HttpContent? content = null,
+        object? body = null)
     {
         try
         {
@@ -21,7 +26,7 @@ public class SendRequestService(IHttpClientFactory httpClientFactory, HybridCach
                     factory: async (cancellationToken) =>
                     {
                         var httpClient = GetHttpClient();
-                        using var requestMessage = new HttpRequestMessage(method, fullUrl);
+                        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, fullUrl);
                         var response = await httpClient.SendAsync(requestMessage, cancellationToken);
 
                         if (!response.IsSuccessStatusCode)
@@ -33,21 +38,26 @@ public class SendRequestService(IHttpClientFactory httpClientFactory, HybridCach
                             };
                         }
 
-                        var content = await response.Content.ReadFromJsonAsync<T>(cancellationToken);
-                        return new OkObjectResult(content);
+                        var responseData = await response.Content.ReadFromJsonAsync<T>(cancellationToken);
+                        return new OkObjectResult(responseData);
                     });
             }
             var httpClient = GetHttpClient();
 
             using var requestMessage = new HttpRequestMessage(method, fullUrl);
 
-            if (body != null)
+            if (content != null)
+            {
+                requestMessage.Content = content;
+            }
+            else if (body != null)
             {
                 if (method == HttpMethod.Get || method == HttpMethod.Delete)
                 {
                     return new ObjectResult("Request body not allowed for GET or DELETE methods.") { StatusCode = 400 };
                 }
-
+                var co = JsonContent.Create(body);
+                Console.WriteLine($"[DEBUG]: SendRequestService to JSON: {co.Value}");
                 requestMessage.Content = JsonContent.Create(body);
             }
 
@@ -60,9 +70,9 @@ public class SendRequestService(IHttpClientFactory httpClientFactory, HybridCach
                     { StatusCode = (int)response.StatusCode };
             }
 
-            var content = await response.Content.ReadFromJsonAsync<T>();
+            var responseData = await response.Content.ReadFromJsonAsync<T>();
 
-            return new OkObjectResult(content);
+            return new OkObjectResult(responseData);
         }
         catch (HttpRequestException httpEx)
         {

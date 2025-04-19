@@ -47,6 +47,11 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
       - ENABLE_SCALAR=true
+      - MINIO_ACCESS_KEY_ID=admin
+      - MINIO_SECRET_ACCESS_KEY=admin123
+      - MINIO_BUCKET=uploads
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_USE_PATH_STYLE_ENDPOINT=true
     depends_on:
       - db_manager
     networks:
