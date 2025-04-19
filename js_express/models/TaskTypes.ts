@@ -1,6 +1,5 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
-import type { Tasks, TasksId } from './Tasks';
 
 export interface TaskTypesAttributes {
   Id: number;
@@ -15,18 +14,6 @@ export class TaskTypes extends Model<TaskTypesAttributes, TaskTypesCreationAttri
   Id!: number;
   Name!: string;
 
-  // TaskTypes hasMany Tasks via TaskTypeId
-  Tasks!: Tasks[];
-  getTasks!: Sequelize.HasManyGetAssociationsMixin<Tasks>;
-  setTasks!: Sequelize.HasManySetAssociationsMixin<Tasks, TasksId>;
-  addTask!: Sequelize.HasManyAddAssociationMixin<Tasks, TasksId>;
-  addTasks!: Sequelize.HasManyAddAssociationsMixin<Tasks, TasksId>;
-  createTask!: Sequelize.HasManyCreateAssociationMixin<Tasks>;
-  removeTask!: Sequelize.HasManyRemoveAssociationMixin<Tasks, TasksId>;
-  removeTasks!: Sequelize.HasManyRemoveAssociationsMixin<Tasks, TasksId>;
-  hasTask!: Sequelize.HasManyHasAssociationMixin<Tasks, TasksId>;
-  hasTasks!: Sequelize.HasManyHasAssociationsMixin<Tasks, TasksId>;
-  countTasks!: Sequelize.HasManyCountAssociationsMixin;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof TaskTypes {
     return TaskTypes.init({

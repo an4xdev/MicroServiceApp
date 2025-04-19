@@ -6,6 +6,8 @@ const port = process.env.PORT || 6713;
 import swaggerUi from 'swagger-ui-express';
 import swaggerJSDoc from 'swagger-jsdoc';
 
+app.use(express.json());
+
 const options = {
   definition: {
     openapi: '3.0.0',
@@ -21,7 +23,7 @@ const options = {
       }
     ]
   },
-  apis: ['./src/index.ts']
+  apis: ['./*.js']
 };
 
 const swaggerSpec = swaggerJSDoc(options);
@@ -38,18 +40,6 @@ const sequelize = new Sequelize(process.env.DATABASE_URL || "postgres://postgres
 const models = initModels(sequelize);
 
 // Task Types
-
-/**
- * @openapi
- * /api/taskTypes:
- *   get:
- *     summary: Get all task types
- *     responses:
- *       200:
- *         description: List of task types
- *       404:
- *        description: No task types found
- */
 
 app.get("/api/taskTypes", async (req, res) => {
   const { TaskTypes } = models;
@@ -89,8 +79,7 @@ app.get("/api/taskTypes/:id", async (req, res) => {
       return;
     }
     res.json(taskType);
-  }
-  catch (error) {
+  } catch (error) {
     console.error("Error fetching task type:", error);
     res.status(500).json({ error: "Internal server error" });
   }
@@ -109,8 +98,7 @@ app.put("/api/taskTypes/:id", async (req, res) => {
     taskType.Name = name;
     await taskType.save();
     res.json(taskType);
-  }
-  catch (error) {
+  } catch (error) {
     console.error("Error updating task type:", error);
     res.status(500).json({ error: "Internal server error" });
   }
@@ -127,8 +115,7 @@ app.delete("/api/taskTypes/:id", async (req, res) => {
     }
     await taskType.destroy();
     res.status(204).send();
-  }
-  catch (error) {
+  } catch (error) {
     console.error("Error deleting task type:", error);
     res.status(500).json({ error: "Internal server error" });
   }
@@ -160,8 +147,7 @@ app.get("/api/companies/:id", async (req, res) => {
       return;
     }
     res.json(company);
-  }
-  catch (error) {
+  } catch (error) {
     console.error("Error fetching company:", error);
     res.status(500).json({ error: "Internal server error" });
   }
@@ -194,8 +180,7 @@ app.put("/api/companies/:id", async (req, res) => {
     company.Name = name;
     await company.save();
     res.json(company);
-  }
-  catch (error) {
+  } catch (error) {
     console.error("Error updating company:", error);
     res.status(500).json({ error: "Internal server error" });
   }
@@ -212,124 +197,19 @@ app.delete("/api/companies/:id", async (req, res) => {
     }
     await company.destroy();
     res.status(204).send();
-  }
-  catch (error) {
+  } catch (error) {
     console.error("Error deleting company:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
 
-app.get("/api/managers", async (req, res) => {
-  const { Users } = models;
-  try {
-    const managers = await Users.findAll({ where: { Role: "manager" } });
-    if (!managers || managers.length === 0) {
-      res.status(404).json({ message: "No managers found" });
-    }
-    res.json(managers);
-  } catch (error) {
-    console.error("Error fetching managers:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-app.get("/api/managers/:id", async (req, res) => {
-  const { Users } = models;
-  const { id } = req.params;
-  try {
-    const manager = await Users.findOne(
-      {
-        where: {
-          Role: "manager",
-          Id: id
-        }
-      });
-    if (!manager) {
-      res.status(404).json({ message: "Manager not found" });
-      return;
-    }
-    res.json(manager);
-  }
-  catch (error) {
-    console.error("Error fetching manager:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-app.post("/api/managers", async (req, res) => {
-  // TODO: propably send request to Auth Service to create manager
-});
-
-app.put("/api/managers/:id", async (req, res) => {
-  const { Users } = models;
-  const { id } = req.params;
-  const { name } = req.body;
-  try {
-    const manager = await Users.findOne(
-      {
-        where: {
-          Role: "manager",
-          Id: id
-        }
-      });
-    if (!manager) {
-      res.status(404).json({ message: "Manager not found" });
-      return;
-    }
-    manager.Username = name;
-    await manager.save();
-    res.json(manager);
-  }
-  catch (error) {
-    console.error("Error updating manager:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-app.delete("/api/managers/:id", async (req, res) => {
-  const { Users } = models;
-  const { id } = req.params;
-  try {
-    const manager = await Users.findOne(
-      {
-        where: {
-          Role: "manager",
-          Id: id
-        }
-      });
-    if (!manager) {
-      res.status(404).json({ message: "Manager not found" });
-      return;
-    }
-    await manager.destroy();
-    res.status(204).send();
-  }
-  catch (error) {
-    console.error("Error deleting manager:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-app.put("/api/sprints/:id/assignManager", async (req, res) => {
-  const { Sprints } = models;
-  const { id } = req.params;
-  const { managerId } = req.body;
-  try {
-    const sprint = await Sprints.findByPk(id);
-    if (!sprint) {
-      res.status(404).json({ message: "Sprint not found" });
-      return;
-    }
-    sprint.ManagerId = managerId;
-    await sprint.save();
-    res.json(sprint);
-  }
-  catch (error) {
-    console.error("Error assigning manager to sprint:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-app.listen(port, () => {
-  console.log(`Serwer is working on port: ${port}`);
-});
+sequelize.authenticate()
+  .then(() => {
+    console.log('Database connection has been established successfully.');
+    app.listen(port, () => {
+      console.log(`Server is working on port: ${port}`);
+    });
+  })
+  .catch(err => {
+    console.error('Unable to connect to the database:', err);
+  });
