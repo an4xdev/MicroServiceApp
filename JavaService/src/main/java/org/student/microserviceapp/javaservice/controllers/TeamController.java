@@ -1,7 +1,6 @@
 package org.student.microserviceapp.javaservice.controllers;
 
 import org.springframework.web.bind.annotation.*;
-import org.student.microserviceapp.javaservice.dto.CreateProjectDTO;
 import org.student.microserviceapp.javaservice.dto.CreateTeamDTO;
 import org.student.microserviceapp.javaservice.dto.TeamDTO;
 import org.student.microserviceapp.javaservice.services.team.ITeamService;
@@ -10,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/projects")
+@RequestMapping("/api/teams")
 public class TeamController {
 
     private final ITeamService teamService;
