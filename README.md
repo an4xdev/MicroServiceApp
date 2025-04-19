@@ -40,13 +40,16 @@ Migrations are managed by `DatabaseService` which is using objects from `SharedO
 
 ### Automatic model generation from database
 
-NOTE: For Spring project I used Intellij IDEA option from Database tab.
+> NOTE  
+> For Spring project I used Intellij IDEA option from Database tab.
+
+> NOTE  
+> For FastAPI project I hand wrote models based on the database schema. But got inspired by models that were generated via [sqlacodegen](https://pypi.org/project/sqlacodegen/).
 
 #### Requirements
 
-- [sqlacodegen](https://pypi.org/project/sqlacodegen/)
-- [Reliese laravel](https://github.com/reliese/laravel)
-- [sequelize-auto](https://github.com/sequelize/sequelize-auto) with PostgreSQL dialect
+- Laravel: [Reliese laravel](https://github.com/reliese/laravel)
+- Express: [sequelize-auto](https://github.com/sequelize/sequelize-auto) with PostgreSQL dialect
 
 #### Usage
 

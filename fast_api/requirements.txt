@@ -3,3 +3,4 @@ uvicorn
 pika
 sqlalchemy
 psycopg2-binary
+sqlmodel
