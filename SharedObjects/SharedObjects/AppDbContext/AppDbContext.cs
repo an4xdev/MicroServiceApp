@@ -13,6 +13,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<TaskHistory> TaskHistories { get; set; }
     public DbSet<Models.TaskStatus> TaskStatuses { get; set; }
     public DbSet<TaskType> TaskTypes { get; set; }
+    public DbSet<Team> Teams { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -23,9 +24,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
         modelBuilder.Entity<User>()
             .HasDiscriminator<string>("Role")
-            .HasValue<User>("User")
-            .HasValue<Developer>("Developer")
-            .HasValue<Manager>("Manager");
+            .HasValue<User>("admin")
+            .HasValue<Developer>("developer")
+            .HasValue<Manager>("manager");
 
         base.OnModelCreating(modelBuilder);
     }
