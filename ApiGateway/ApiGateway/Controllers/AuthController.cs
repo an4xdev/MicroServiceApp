@@ -13,7 +13,7 @@ public class AuthController(ISendRequestService sendRequestService) : Controller
     [Authorize(AuthenticationSchemes = "Bearer")]
     [Authorize(Roles = "admin")]
     [HttpPost("register")]
-    public async Task<ActionResult<User>> Register(UserDto request)
+    public async Task<ActionResult<User>> Register(AdminRegisterDto request)
     {
         return await sendRequestService.SendRequestAsync<User>(HttpMethod.Post, "/auth/register", ServiceType.AuthService, body:request);
         // try
@@ -42,7 +42,7 @@ public class AuthController(ISendRequestService sendRequestService) : Controller
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<TokenResponseDto>> Login(UserDto request)
+    public async Task<ActionResult<TokenResponseDto>> Login(UserLoginDto request)
     {
 
         return await sendRequestService.SendRequestAsync<TokenResponseDto>(HttpMethod.Post, "/auth/login", ServiceType.AuthService, body:request);

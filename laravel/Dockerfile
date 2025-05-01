@@ -1,4 +1,4 @@
-FROM composer:2 as build
+FROM composer:2 AS build
 WORKDIR /app
 
 COPY composer.json composer.lock ./

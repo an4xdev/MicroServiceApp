@@ -41,7 +41,7 @@ VALUES
 INSERT INTO public."Users"
 ("Id", "Username", "PasswordHash", "Role", "RefreshToken", "RefreshTokenExpiryTime", "Avatar", "PasswordSalt")
 VALUES
-    ('0195e1ef-eda3-7e5f-9a9f-d6101c9b4644', 'admin', 'AQAAAAIAAYagAAAAEERnDpmaSjlgrKBSE8z5bsKAgjKlb7kgYPcKjkqvpd27eHwczHSVGGitt9d6o2chXQ==', 'admin', NULL, NULL, NULL, 'B2hHREYo6T4CeXZkEwThMw=='),
+    ('0195e1ef-eda3-7e5f-9a9f-d6101c9b4644', 'admin', 'AQAAAAIAAYagAAAAEK5QXetwkM6E/ElyAX491XbOjzoq1v+3Q2NRXQEFanYGVL1O3zoHkzpWv6erfS1lww==', 'admin', NULL, NULL, NULL, 'zOnRFy+RiZ6TcHC8XPsMQQ=='),
     ('0195e20a-5055-7d77-a247-f093aded8758', 'manager1', 'AQAAAAIAAYagAAAAEGjuAs1ukAUbY+mLlcS+L4QT1FS40ATP597z3q9FvLTD813+EXV8SiAHhA8pzawJeg==', 'manager', NULL, NULL, NULL, 'WtWWjxcM/DRZIgBNAPr4xQ=='),
     ('0195e20a-6f95-7713-9e4b-bb21508c9270', 'manager2', 'AQAAAAIAAYagAAAAEDieevQa4rEOonp5WjjRTJvU0JM0BfGIng2ZKgBvdv7Dnm2GOR06eRGm/vZmrBuoIA==', 'manager', NULL, NULL, NULL, 'y3hxZZWdBZ3n4M2RDJabfA==');
 

@@ -1,6 +1,5 @@
 using SharedObjects.DTOs;
 using SharedObjects.Models;
-using AuthService.Services;
 using AuthService.Services.Auth;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,7 +10,7 @@ namespace AuthService.Controllers
     public class AuthController(IAuthService authService) : ControllerBase
     {
         [HttpPost("register")]
-        public async Task<ActionResult<User>> Register(UserDto request)
+        public async Task<ActionResult<User>> Register(AdminRegisterDto request)
         {
             var user = await authService.RegisterAsync(request);
             if (user is null)
@@ -21,7 +20,7 @@ namespace AuthService.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<TokenResponseDto>> Login(UserDto request)
+        public async Task<ActionResult<TokenResponseDto>> Login(UserLoginDto request)
         {
             var result = await authService.LoginAsync(request);
             if (result is null)
@@ -38,6 +37,12 @@ namespace AuthService.Controllers
                 return Unauthorized("Invalid refresh token.");
 
             return Ok(result);
+        }
+
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword(ChangePasswordDto request)
+        {
+            return await authService.ChangePassword(request);
         }
     }
 }

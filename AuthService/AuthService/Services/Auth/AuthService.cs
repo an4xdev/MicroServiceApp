@@ -2,7 +2,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SharedObjects.AppDbContext;
@@ -13,7 +15,7 @@ namespace AuthService.Services.Auth;
 
 public class AuthService(AppDbContext context, IConfiguration configuration) : IAuthService
 {
-    public async Task<TokenResponseDto?> LoginAsync(UserDto request)
+    public async Task<TokenResponseDto?> LoginAsync(UserLoginDto request)
     {
         var user = await context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
         if (user is null)
@@ -21,8 +23,8 @@ public class AuthService(AppDbContext context, IConfiguration configuration) : I
             return null;
         }
 
-        if (new PasswordHasher<User>().VerifyHashedPassword(user, user.PasswordSalt + user.PasswordHash,
-                request.Password)
+        if (new PasswordHasher<User>().VerifyHashedPassword(user, user.PasswordHash,
+                user.PasswordSalt + request.Password)
             == PasswordVerificationResult.Failed)
         {
             return null;
@@ -40,7 +42,7 @@ public class AuthService(AppDbContext context, IConfiguration configuration) : I
         };
     }
 
-    public async Task<User?> RegisterAsync(UserDto request)
+    public async Task<User?> RegisterAsync(AdminRegisterDto request)
     {
         if (await context.Users.AnyAsync(u => u.Username == request.Username))
         {
@@ -53,12 +55,12 @@ public class AuthService(AppDbContext context, IConfiguration configuration) : I
             Username = request.Username,
             PasswordHash = string.Empty,
             PasswordSalt = salt,
+            Role = request.Role,
         };
         var hashedPassword = new PasswordHasher<User>()
             .HashPassword(user, salt + request.Password);
 
         user.PasswordHash = hashedPassword;
-        user.Role = "user";
 
         context.Users.Add(user);
         await context.SaveChangesAsync();
@@ -82,6 +84,61 @@ public class AuthService(AppDbContext context, IConfiguration configuration) : I
 
         return await CreateTokenResponse(user);
     }
+
+    public async Task<IActionResult> ChangePassword(ChangePasswordDto request)
+    {
+        Console.WriteLine($"Id: {request.UserId}");
+
+        var user = await context.Users.Where(u=>u.Id == request.UserId).FirstOrDefaultAsync();
+
+        if (user is null)
+        {
+            return new NotFoundObjectResult(new DefaultResponse { Message = "User not found" });
+        }
+
+        if (new PasswordHasher<User>().VerifyHashedPassword(user, user.PasswordHash,
+                user.PasswordSalt + request.OldPassword)
+            == PasswordVerificationResult.Failed)
+        {
+            return new BadRequestObjectResult(new DefaultResponse{ Message = "Incorrect old password." });
+        }
+
+        var hashedPassword = new PasswordHasher<User>()
+            .HashPassword(user, user.PasswordSalt + request.NewPassword);
+
+        user.PasswordHash = hashedPassword;
+
+        await context.SaveChangesAsync();
+
+        return new OkObjectResult(new DefaultResponse { Message = "Password changed successfully" });
+    }
+
+    // public async  ChangePassword(ChangePasswordDto request)
+    // {
+    //     var user = await context.Users.Where(u=>u.Id == request.UserId).FirstOrDefaultAsync();
+    //
+    //     if (user is null)
+    //     {
+    //         return null;
+    //     }
+    //
+    //     if (new PasswordHasher<User>().VerifyHashedPassword(user, user.PasswordHash,
+    //             user.PasswordSalt + request.OldPassword)
+    //         == PasswordVerificationResult.Failed)
+    //     {
+    //         return null;
+    //     }
+    //
+    //     var hashedPassword = new PasswordHasher<User>()
+    //         .HashPassword(user, user.PasswordSalt + request.NewPassword);
+    //
+    //     user.PasswordHash = hashedPassword;
+    //
+    //     await context.SaveChangesAsync();
+    //
+    //     return new DefaultResponse();
+    //
+    // }
 
     private async Task<User?> ValidateRefreshTokenAsync(Guid userId, string refreshToken)
     {

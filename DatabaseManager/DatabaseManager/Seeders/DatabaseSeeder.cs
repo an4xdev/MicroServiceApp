@@ -13,6 +13,8 @@ public static class DatabaseSeeder
             return;
         }
 
+        var transaction = context.Database.BeginTransaction();
+
         try
         {
             Console.WriteLine("Seeding data from SQL file...");
@@ -22,10 +24,18 @@ public static class DatabaseSeeder
             context.Database.ExecuteSqlRaw(sql);
 
             Console.WriteLine("Seeding completed successfully.");
+
+            transaction.Commit();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error executing seed SQL: {ex.Message}");
+            transaction.Rollback();
         }
+        finally
+        {
+            transaction.Dispose();
+        }
+
     }
 }
