@@ -1,7 +1,8 @@
 using SharedObjects.DTOs;
-using SharedObjects.Models;
 using AuthService.Services.Auth;
 using Microsoft.AspNetCore.Mvc;
+using SharedObjects.Models;
+using SharedObjects.Responses;
 
 namespace AuthService.Controllers
 {
@@ -10,39 +11,32 @@ namespace AuthService.Controllers
     public class AuthController(IAuthService authService) : ControllerBase
     {
         [HttpPost("register")]
-        public async Task<ActionResult<User>> Register(AdminRegisterDto request)
+        public async Task<ActionResult<ApiResponse<User>>> Register(AdminRegisterDto request)
         {
-            var user = await authService.RegisterAsync(request);
-            if (user is null)
-                return BadRequest("Username already exists.");
+            var result = await authService.RegisterAsync(request);
 
-            return Ok(user);
+            return result.ToActionResult();
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<TokenResponseDto>> Login(UserLoginDto request)
+        public async Task<ActionResult<ApiResponse<TokenResponseDto>>> Login(UserLoginDto request)
         {
             var result = await authService.LoginAsync(request);
-            if (result is null)
-                return BadRequest("Invalid username or password.");
-
-            return Ok(result);
+            return result.ToActionResult();
         }
 
         [HttpPost("refresh-token")]
-        public async Task<ActionResult<TokenResponseDto>> RefreshToken(RefreshTokenRequestDto request)
+        public async Task<ActionResult<ApiResponse<TokenResponseDto>>> RefreshToken(RefreshTokenRequestDto request)
         {
             var result = await authService.RefreshTokensAsync(request);
-            if (result?.AccessToken is null)
-                return Unauthorized("Invalid refresh token.");
-
-            return Ok(result);
+            return result.ToActionResult();
         }
 
         [HttpPost("change-password")]
-        public async Task<IActionResult> ChangePassword(ChangePasswordDto request)
+        public async Task<ActionResult<ApiResponse<object?>>> ChangePassword(ChangePasswordDto request)
         {
-            return await authService.ChangePassword(request);
+            var result = await authService.ChangePassword(request);
+            return result.ToActionResult();
         }
     }
 }

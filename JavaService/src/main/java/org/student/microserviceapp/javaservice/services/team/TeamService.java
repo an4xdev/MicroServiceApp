@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.student.microserviceapp.javaservice.dto.CreateTeamDTO;
 import org.student.microserviceapp.javaservice.dto.TeamDTO;
 import org.student.microserviceapp.javaservice.repositories.TeamRepository;
+import org.student.microserviceapp.javaservice.responses.Result;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,27 +18,27 @@ public class TeamService implements ITeamService {
     }
 
     @Override
-    public TeamDTO getTeamById(UUID id) {
+    public Result<TeamDTO> getTeamById(UUID id) {
         return null;
     }
 
     @Override
-    public List<TeamDTO> getAllTeams() {
-        return List.of();
-    }
-
-    @Override
-    public UUID createTeam(CreateTeamDTO createTeamDTO) {
+    public Result<List<TeamDTO>> getAllTeams() {
         return null;
     }
 
     @Override
-    public TeamDTO updateTeam(UUID id, CreateTeamDTO createTeamDTO) {
+    public Result<UUID> createTeam(CreateTeamDTO createTeamDTO) {
         return null;
     }
 
     @Override
-    public void deleteTeam(UUID id) {
+    public Result<TeamDTO> updateTeam(UUID id, CreateTeamDTO createTeamDTO) {
+        return null;
+    }
 
+    @Override
+    public Result<Void> deleteTeam(UUID id) {
+        return null;
     }
 }

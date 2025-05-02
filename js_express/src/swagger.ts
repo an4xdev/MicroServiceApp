@@ -24,6 +24,17 @@
  *         Name:
  *           type: string
  *           description: The name of the company
+ *     ApiResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *           description: The message returned from the API
+ *           example: Operation completed successfully
+ *         data:
+ *           type: object
+ *           nullable: true
+ *           description: The data returned from the API or null in case of error
  */
 
 /**
@@ -39,9 +50,15 @@
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/TaskType'
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Task types retrieved successfully
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/TaskType'
  *       404:
  *         description: No task types found in the database
  *         content:
@@ -52,6 +69,8 @@
  *                 message:
  *                   type: string
  *                   example: No task types found
+ *                 data:
+ *                   type: null
  *       500:
  *         description: Server error
  *         content:
@@ -59,9 +78,11 @@
  *             schema:
  *               type: object
  *               properties:
- *                 error:
+ *                 message:
  *                   type: string
  *                   example: Internal server error
+ *                 data:
+ *                   type: null
  */
 
 /**
@@ -90,7 +111,25 @@
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/TaskType'
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Task type created successfully
+ *                 data:
+ *                   $ref: '#/components/schemas/TaskType'
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Invalid input data
+ *                 data:
+ *                   type: null
  *       500:
  *         description: Server error
  *         content:
@@ -98,9 +137,11 @@
  *             schema:
  *               type: object
  *               properties:
- *                 error:
+ *                 message:
  *                   type: string
  *                   example: Internal server error
+ *                 data:
+ *                   type: null
  */
 
 /**
@@ -123,7 +164,13 @@
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/TaskType'
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Task type retrieved successfully
+ *                 data:
+ *                   $ref: '#/components/schemas/TaskType'
  *       404:
  *         description: Task type not found
  *         content:
@@ -134,6 +181,8 @@
  *                 message:
  *                   type: string
  *                   example: Task type not found
+ *                 data:
+ *                   type: null
  *       500:
  *         description: Server error
  *         content:
@@ -141,9 +190,11 @@
  *             schema:
  *               type: object
  *               properties:
- *                 error:
+ *                 message:
  *                   type: string
  *                   example: Internal server error
+ *                 data:
+ *                   type: null
  */
 
 /**
@@ -179,7 +230,13 @@
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/TaskType'
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Task type updated successfully
+ *                 data:
+ *                   $ref: '#/components/schemas/TaskType'
  *       404:
  *         description: Task type not found
  *         content:
@@ -190,6 +247,20 @@
  *                 message:
  *                   type: string
  *                   example: Task type not found
+ *                 data:
+ *                   type: null
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Invalid input data
+ *                 data:
+ *                   type: null
  *       500:
  *         description: Server error
  *         content:
@@ -197,9 +268,11 @@
  *             schema:
  *               type: object
  *               properties:
- *                 error:
+ *                 message:
  *                   type: string
  *                   example: Internal server error
+ *                 data:
+ *                   type: null
  */
 
 /**
@@ -229,6 +302,8 @@
  *                 message:
  *                   type: string
  *                   example: Task type not found
+ *                 data:
+ *                   type: null
  *       500:
  *         description: Server error
  *         content:
@@ -236,9 +311,11 @@
  *             schema:
  *               type: object
  *               properties:
- *                 error:
+ *                 message:
  *                   type: string
  *                   example: Internal server error
+ *                 data:
+ *                   type: null
  */
 
 /**
@@ -254,9 +331,15 @@
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Company'
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Companies retrieved successfully
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Company'
  *       404:
  *         description: No companies found in the database
  *         content:
@@ -267,6 +350,8 @@
  *                 message:
  *                   type: string
  *                   example: No companies found
+ *                 data:
+ *                   type: null
  *       500:
  *         description: Server error
  *         content:
@@ -274,9 +359,11 @@
  *             schema:
  *               type: object
  *               properties:
- *                 error:
+ *                 message:
  *                   type: string
  *                   example: Internal server error
+ *                 data:
+ *                   type: null
  */
 
 /**
@@ -305,7 +392,25 @@
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Company'
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Company created successfully
+ *                 data:
+ *                   $ref: '#/components/schemas/Company'
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Invalid input data
+ *                 data:
+ *                   type: null
  *       500:
  *         description: Server error
  *         content:
@@ -313,9 +418,11 @@
  *             schema:
  *               type: object
  *               properties:
- *                 error:
+ *                 message:
  *                   type: string
  *                   example: Internal server error
+ *                 data:
+ *                   type: null
  */
 
 /**
@@ -338,7 +445,13 @@
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Company'
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Company retrieved successfully
+ *                 data:
+ *                   $ref: '#/components/schemas/Company'
  *       404:
  *         description: Company not found
  *         content:
@@ -349,6 +462,8 @@
  *                 message:
  *                   type: string
  *                   example: Company not found
+ *                 data:
+ *                   type: null
  *       500:
  *         description: Server error
  *         content:
@@ -356,9 +471,11 @@
  *             schema:
  *               type: object
  *               properties:
- *                 error:
+ *                 message:
  *                   type: string
  *                   example: Internal server error
+ *                 data:
+ *                   type: null
  */
 
 /**
@@ -394,7 +511,13 @@
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Company'
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Company updated successfully
+ *                 data:
+ *                   $ref: '#/components/schemas/Company'
  *       404:
  *         description: Company not found
  *         content:
@@ -405,6 +528,20 @@
  *                 message:
  *                   type: string
  *                   example: Company not found
+ *                 data:
+ *                   type: null
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Invalid input data
+ *                 data:
+ *                   type: null
  *       500:
  *         description: Server error
  *         content:
@@ -412,9 +549,11 @@
  *             schema:
  *               type: object
  *               properties:
- *                 error:
+ *                 message:
  *                   type: string
  *                   example: Internal server error
+ *                 data:
+ *                   type: null
  */
 
 /**
@@ -444,6 +583,8 @@
  *                 message:
  *                   type: string
  *                   example: Company not found
+ *                 data:
+ *                   type: null
  *       500:
  *         description: Server error
  *         content:
@@ -451,7 +592,9 @@
  *             schema:
  *               type: object
  *               properties:
- *                 error:
+ *                 message:
  *                   type: string
  *                   example: Internal server error
+ *                 data:
+ *                   type: null
  */

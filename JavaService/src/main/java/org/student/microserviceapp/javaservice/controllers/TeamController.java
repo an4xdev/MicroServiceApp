@@ -1,8 +1,10 @@
 package org.student.microserviceapp.javaservice.controllers;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.student.microserviceapp.javaservice.dto.CreateTeamDTO;
 import org.student.microserviceapp.javaservice.dto.TeamDTO;
+import org.student.microserviceapp.javaservice.responses.ApiResponse;
 import org.student.microserviceapp.javaservice.services.team.ITeamService;
 
 import java.util.List;
@@ -19,33 +21,38 @@ public class TeamController {
     }
 
     @GetMapping
-    public List<TeamDTO> getTeams() {
+    public ResponseEntity<ApiResponse<List<TeamDTO>>> getTeams() {
         // TODO: implement getTeams
-        return teamService.getAllTeams();
+        var teams = teamService.getAllTeams();
+        return teams.toResponseEntity();
     }
 
     @GetMapping("/{id}")
-    public TeamDTO getTeam(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<TeamDTO>> getTeam(@PathVariable UUID id) {
         // TODO: implement getTeam
-        return teamService.getTeamById(id);
+        var team = teamService.getTeamById(id);
+        return team.toResponseEntity();
     }
 
     @PostMapping
-    public UUID createTeam(@RequestBody CreateTeamDTO createTeamDTO) {
+    public ResponseEntity<ApiResponse<UUID>> createTeam(@RequestBody CreateTeamDTO createTeamDTO) {
         // TODO: implement createTeam
-        return teamService.createTeam(createTeamDTO);
+        var teamId = teamService.createTeam(createTeamDTO);
+        return teamId.toResponseEntity();
     }
 
     @PutMapping("/{id}")
-    public TeamDTO updateTeam(@PathVariable UUID id, @RequestBody CreateTeamDTO createTeamDTO) {
+    public ResponseEntity<ApiResponse<TeamDTO>> updateTeam(@PathVariable UUID id, @RequestBody CreateTeamDTO createTeamDTO) {
         // TODO: implement updateTeam
-        return teamService.updateTeam(id, createTeamDTO);
+        var team = teamService.updateTeam(id, createTeamDTO);
+        return team.toResponseEntity();
     }
 
     @DeleteMapping("/{id}")
-    public void deleteTeam(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<Void>> deleteTeam(@PathVariable UUID id) {
         // TODO: implement deleteTeam
-        teamService.deleteTeam(id);
+        var result = teamService.deleteTeam(id);
+        return result.toResponseEntity();
     }
 
 }

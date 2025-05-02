@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.student.microserviceapp.javaservice.dto.CreateProjectDTO;
 import org.student.microserviceapp.javaservice.dto.ProjectDTO;
 import org.student.microserviceapp.javaservice.repositories.ProjectRepository;
+import org.student.microserviceapp.javaservice.responses.Result;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,27 +18,27 @@ public class ProjectService implements IProjectService {
     }
 
     @Override
-    public ProjectDTO getProjectById(UUID id) {
+    public Result<ProjectDTO> getProjectById(UUID id) {
         return null;
     }
 
     @Override
-    public List<ProjectDTO> getAllProjects() {
-        return List.of();
-    }
-
-    @Override
-    public UUID createProject(CreateProjectDTO createProjectDTO) {
+    public Result<List<ProjectDTO>> getAllProjects() {
         return null;
     }
 
     @Override
-    public ProjectDTO updateProject(UUID id, CreateProjectDTO createProjectDTO) {
+    public Result<UUID> createProject(CreateProjectDTO createProjectDTO) {
         return null;
     }
 
     @Override
-    public void deleteProject(UUID id) {
+    public Result<ProjectDTO> updateProject(UUID id, CreateProjectDTO createProjectDTO) {
+        return null;
+    }
 
+    @Override
+    public Result<Void> deleteProject(UUID id) {
+        return null;
     }
 }

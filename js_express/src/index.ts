@@ -5,6 +5,7 @@ const port = process.env.PORT || 6713;
 
 import swaggerUi from 'swagger-ui-express';
 import swaggerJSDoc from 'swagger-jsdoc';
+import ApiResponse from "../models/ApiResponse";
 
 app.use(express.json());
 
@@ -46,12 +47,16 @@ app.get("/api/taskTypes", async (req, res) => {
   try {
     const taskTypes = await TaskTypes.findAll();
     if (!taskTypes || taskTypes.length === 0) {
-      res.status(404).json({ message: "No task types found" });
+      let response = ApiResponse.NotFound("No task types found");
+      res.status(404).json(response);
+      return;
     }
-    res.json(taskTypes);
+    let response = ApiResponse.Success("Task types fetched successfully", taskTypes);
+    res.status(200).json(response);
   } catch (error) {
     console.error("Error fetching task types:", error);
-    res.status(500).json({ error: "Internal server error" });
+    let response = ApiResponse.InternalError("Internal server error");
+    res.status(500).json(response);
   }
 });
 
@@ -62,10 +67,12 @@ app.post("/api/taskTypes", async (req, res) => {
     const taskType = await TaskTypes.create({
       Name: name
     });
-    res.status(201).json(taskType);
+    let response = ApiResponse.Created("Task type created successfully", taskType);
+    res.status(201).json(response);
   } catch (error) {
     console.error("Error creating task type:", error);
-    res.status(500).json({ error: "Internal server error" });
+    let response = ApiResponse.InternalError("Internal server error");
+    res.status(500).json(response);
   }
 });
 
@@ -75,13 +82,16 @@ app.get("/api/taskTypes/:id", async (req, res) => {
   try {
     const taskType = await TaskTypes.findByPk(id);
     if (!taskType) {
-      res.status(404).json({ message: "Task type not found" });
+      let response = ApiResponse.NotFound("Task type not found");
+      res.status(404).json(response);
       return;
     }
-    res.json(taskType);
+    let response = ApiResponse.Success("Task type fetched successfully", taskType);
+    res.status(200).json(response);
   } catch (error) {
     console.error("Error fetching task type:", error);
-    res.status(500).json({ error: "Internal server error" });
+    let response = ApiResponse.InternalError("Internal server error");
+    res.status(500).json(response);
   }
 });
 
@@ -92,12 +102,14 @@ app.put("/api/taskTypes/:id", async (req, res) => {
   try {
     const taskType = await TaskTypes.findByPk(id);
     if (!taskType) {
-      res.status(404).json({ message: "Task type not found" });
+      let response = ApiResponse.NotFound("Task type not found");
+      res.status(404).json(response);
       return;
     }
     taskType.Name = name;
     await taskType.save();
-    res.json(taskType);
+    let response = ApiResponse.Success("Task type updated successfully", taskType);
+    res.status(200).json(response);
   } catch (error) {
     console.error("Error updating task type:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -110,14 +122,16 @@ app.delete("/api/taskTypes/:id", async (req, res) => {
   try {
     const taskType = await TaskTypes.findByPk(id);
     if (!taskType) {
-      res.status(404).json({ message: "Task type not found" });
+      let response = ApiResponse.NotFound("Task type not found");
+      res.status(404).json(response);
       return;
     }
     await taskType.destroy();
     res.status(204).send();
   } catch (error) {
     console.error("Error deleting task type:", error);
-    res.status(500).json({ error: "Internal server error" });
+    let response = ApiResponse.InternalError("Internal server error");
+    res.status(500).json(response);
   }
 });
 
@@ -128,12 +142,17 @@ app.get("/api/companies", async (req, res) => {
   try {
     const companies = await Companies.findAll();
     if (!companies || companies.length === 0) {
-      res.status(404).json({ message: "No companies found" });
+      let response = ApiResponse.NotFound("No companies found");
+      res.status(404).json(response);
+      return;
     }
-    res.json(companies);
+
+    let response = ApiResponse.Success("Companies fetched successfully", companies);
+    res.status(200).json(response);
   } catch (error) {
     console.error("Error fetching companies:", error);
-    res.status(500).json({ error: "Internal server error" });
+    let response = ApiResponse.InternalError("Internal server error");
+    res.status(500).json(response);
   }
 });
 
@@ -143,13 +162,16 @@ app.get("/api/companies/:id", async (req, res) => {
   try {
     const company = await Companies.findByPk(id);
     if (!company) {
-      res.status(404).json({ message: "Company not found" });
+      let response = ApiResponse.NotFound("Company not found");
+      res.status(404).json(response);
       return;
     }
-    res.json(company);
+    let response = ApiResponse.Success("Company fetched successfully", company);
+    res.status(200).json(response);
   } catch (error) {
     console.error("Error fetching company:", error);
-    res.status(500).json({ error: "Internal server error" });
+    let response = ApiResponse.InternalError("Internal server error");
+    res.status(500).json(response);
   }
 });
 
@@ -160,10 +182,12 @@ app.post("/api/companies", async (req, res) => {
     const company = await Companies.create({
       Name: name
     });
-    res.status(201).json(company);
+    let response = ApiResponse.Created("Company created successfully", company);
+    res.status(201).json(response);
   } catch (error) {
     console.error("Error creating company:", error);
-    res.status(500).json({ error: "Internal server error" });
+    let response = ApiResponse.InternalError("Internal server error");
+    res.status(500).json(response);
   }
 });
 
@@ -174,15 +198,18 @@ app.put("/api/companies/:id", async (req, res) => {
   try {
     const company = await Companies.findByPk(id);
     if (!company) {
-      res.status(404).json({ message: "Company not found" });
+      let response = ApiResponse.NotFound("Company not found");
+      res.status(404).json(response);
       return;
     }
     company.Name = name;
     await company.save();
-    res.json(company);
+    let response = ApiResponse.Success("Company updated successfully", company);
+    res.status(200).json(response);
   } catch (error) {
     console.error("Error updating company:", error);
-    res.status(500).json({ error: "Internal server error" });
+    let response = ApiResponse.InternalError("Internal server error");
+    res.status(500).json(response);
   }
 });
 
@@ -192,14 +219,16 @@ app.delete("/api/companies/:id", async (req, res) => {
   try {
     const company = await Companies.findByPk(id);
     if (!company) {
-      res.status(404).json({ message: "Company not found" });
+      let response = ApiResponse.NotFound("Company not found");
+      res.status(404).json(response);
       return;
     }
     await company.destroy();
     res.status(204).send();
   } catch (error) {
     console.error("Error deleting company:", error);
-    res.status(500).json({ error: "Internal server error" });
+    let response = ApiResponse.InternalError("Internal server error");
+    res.status(500).json(response);
   }
 });
 

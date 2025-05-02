@@ -1,8 +1,10 @@
 package org.student.microserviceapp.javaservice.controllers;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.student.microserviceapp.javaservice.dto.CreateProjectDTO;
 import org.student.microserviceapp.javaservice.dto.ProjectDTO;
+import org.student.microserviceapp.javaservice.responses.ApiResponse;
 import org.student.microserviceapp.javaservice.services.company.ICompanyService;
 import org.student.microserviceapp.javaservice.services.project.IProjectService;
 
@@ -23,32 +25,37 @@ public class ProjectController {
     }
 
     @GetMapping
-    public List<ProjectDTO> getProjects() {
+    public ResponseEntity<ApiResponse<List<ProjectDTO>>> getProjects() {
         // TODO: implement getProjects
-        return projectService.getAllProjects();
+        var projects = projectService.getAllProjects();
+        return projects.toResponseEntity();
     }
 
     @GetMapping("/{id}")
-    public ProjectDTO getProject(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<ProjectDTO>> getProject(@PathVariable UUID id) {
         // TODO: implement getProject
-        return projectService.getProjectById(id);
+        var project = projectService.getProjectById(id);
+        return project.toResponseEntity();
     }
 
     @PostMapping
-    public UUID createProject(CreateProjectDTO createProjectDto) {
+    public ResponseEntity<ApiResponse<UUID>> createProject(CreateProjectDTO createProjectDto) {
         // TODO: implement createProject
-        return projectService.createProject(createProjectDto);
+        var projectId = projectService.createProject(createProjectDto);
+        return projectId.toResponseEntity();
     }
 
     @PutMapping("/{id}")
-    public ProjectDTO updateProject(@PathVariable UUID id, @RequestBody CreateProjectDTO createProjectDTO) {
+    public ResponseEntity<ApiResponse<ProjectDTO>> updateProject(@PathVariable UUID id, @RequestBody CreateProjectDTO createProjectDTO) {
         // TODO: implement updateProject
-        return projectService.updateProject(id, createProjectDTO);
+        var project = projectService.updateProject(id, createProjectDTO);
+        return project.toResponseEntity();
     }
 
     @DeleteMapping("/{id}")
-    public void deleteProject(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<Void>> deleteProject(@PathVariable UUID id) {
         // TODO: implement deleteProject
-        projectService.deleteProject(id);
+        var response = projectService.deleteProject(id);
+        return response.toResponseEntity();
     }
 }

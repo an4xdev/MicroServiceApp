@@ -3,6 +3,7 @@ using ApiGateway.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SharedObjects.DTOs;
+using SharedObjects.Responses;
 
 namespace ApiGateway.Controllers;
 
@@ -12,14 +13,14 @@ namespace ApiGateway.Controllers;
 public class ProfileController(ISendRequestService requestService) : ControllerBase
 {
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<ProfileDto>> Get(Guid id)
+    public async Task<ActionResult<ApiResponse<ProfileDto>>> Get(Guid id)
     {
-        return await requestService.SendRequestAsync<ProfileDto>(HttpMethod.Get, $"/profile/{id}",
+        return await requestService.SendRequestAsync<ApiResponse<ProfileDto>>(HttpMethod.Get, $"/profile/{id}",
             ServiceType.AuthService);
     }
 
     [HttpPost("avatar")]
-    public async Task<ActionResult<string>> UpdateAvatar([FromForm] IFormFile? file,
+    public async Task<ActionResult<ApiResponse<object?>>> UpdateAvatar([FromForm] IFormFile? file,
     [FromForm] Guid userId)
     {
         if (file == null || file.Length == 0)
