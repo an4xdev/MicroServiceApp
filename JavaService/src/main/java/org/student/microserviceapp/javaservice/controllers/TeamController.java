@@ -1,9 +1,10 @@
 package org.student.microserviceapp.javaservice.controllers;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.student.microserviceapp.javaservice.dto.CreateTeamDTO;
-import org.student.microserviceapp.javaservice.dto.TeamDTO;
+import org.student.microserviceapp.javaservice.dto.team.CreateTeamDTO;
+import org.student.microserviceapp.javaservice.dto.team.TeamDTO;
 import org.student.microserviceapp.javaservice.responses.ApiResponse;
 import org.student.microserviceapp.javaservice.services.team.ITeamService;
 
@@ -22,21 +23,18 @@ public class TeamController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<TeamDTO>>> getTeams() {
-        // TODO: implement getTeams
         var teams = teamService.getAllTeams();
         return teams.toResponseEntity();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<TeamDTO>> getTeam(@PathVariable UUID id) {
-        // TODO: implement getTeam
         var team = teamService.getTeamById(id);
         return team.toResponseEntity();
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<UUID>> createTeam(@RequestBody CreateTeamDTO createTeamDTO) {
-        // TODO: implement createTeam
+    public ResponseEntity<ApiResponse<UUID>> createTeam(@Valid @RequestBody CreateTeamDTO createTeamDTO) {
         var teamId = teamService.createTeam(createTeamDTO);
         return teamId.toResponseEntity();
     }
@@ -50,7 +48,6 @@ public class TeamController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteTeam(@PathVariable UUID id) {
-        // TODO: implement deleteTeam
         var result = teamService.deleteTeam(id);
         return result.toResponseEntity();
     }

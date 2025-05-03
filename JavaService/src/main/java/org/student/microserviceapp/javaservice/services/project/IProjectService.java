@@ -1,7 +1,7 @@
 package org.student.microserviceapp.javaservice.services.project;
 
-import org.student.microserviceapp.javaservice.dto.CreateProjectDTO;
-import org.student.microserviceapp.javaservice.dto.ProjectDTO;
+import org.student.microserviceapp.javaservice.dto.project.CreateProjectDTO;
+import org.student.microserviceapp.javaservice.dto.project.ProjectDTO;
 import org.student.microserviceapp.javaservice.responses.Result;
 
 import java.util.List;

@@ -1,9 +1,9 @@
-package org.student.microserviceapp.javaservice.dto;
+package org.student.microserviceapp.javaservice.dto.team;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.student.microserviceapp.javaservice.dto.user.UserDTO;
 import org.student.microserviceapp.javaservice.models.Team;
 
 import java.util.UUID;
@@ -16,11 +16,11 @@ public class TeamDTO {
 
     private String name;
 
-    private String Manager;
+    private UserDTO Manager;
 
     public TeamDTO(Team team) {
         id = team.getId();
         name = team.getName();
-        Manager = team.getManager().getUsername();
+        Manager = new UserDTO(team.getManager());
     }
 }

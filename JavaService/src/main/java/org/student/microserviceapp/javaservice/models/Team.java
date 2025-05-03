@@ -11,7 +11,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-@Table(name = "\"Team\"", schema = "public", indexes = {
+@Table(name = "\"Teams\"", schema = "public", indexes = {
         @Index(name = "IX_Team_ManagerId", columnList = "ManagerId")
 })
 public class Team {

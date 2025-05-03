@@ -1,4 +1,4 @@
-package org.student.microserviceapp.javaservice.dto;
+package org.student.microserviceapp.javaservice.dto.company;
 
 import lombok.Getter;
 import org.student.microserviceapp.javaservice.models.Company;

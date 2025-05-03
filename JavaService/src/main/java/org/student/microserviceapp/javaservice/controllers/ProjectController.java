@@ -1,11 +1,11 @@
 package org.student.microserviceapp.javaservice.controllers;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.student.microserviceapp.javaservice.dto.CreateProjectDTO;
-import org.student.microserviceapp.javaservice.dto.ProjectDTO;
+import org.student.microserviceapp.javaservice.dto.project.CreateProjectDTO;
+import org.student.microserviceapp.javaservice.dto.project.ProjectDTO;
 import org.student.microserviceapp.javaservice.responses.ApiResponse;
-import org.student.microserviceapp.javaservice.services.company.ICompanyService;
 import org.student.microserviceapp.javaservice.services.project.IProjectService;
 
 import java.util.List;
@@ -16,31 +16,25 @@ import java.util.UUID;
 public class ProjectController {
 
     private final IProjectService projectService;
-    private final ICompanyService companyService;
 
-    public ProjectController(IProjectService projectService,
-                             ICompanyService companyService) {
+    public ProjectController(IProjectService projectService) {
         this.projectService = projectService;
-        this.companyService = companyService;
     }
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<ProjectDTO>>> getProjects() {
-        // TODO: implement getProjects
         var projects = projectService.getAllProjects();
         return projects.toResponseEntity();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<ProjectDTO>> getProject(@PathVariable UUID id) {
-        // TODO: implement getProject
         var project = projectService.getProjectById(id);
         return project.toResponseEntity();
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<UUID>> createProject(CreateProjectDTO createProjectDto) {
-        // TODO: implement createProject
+    public ResponseEntity<ApiResponse<UUID>> createProject(@Valid @RequestBody CreateProjectDTO createProjectDto) {
         var projectId = projectService.createProject(createProjectDto);
         return projectId.toResponseEntity();
     }
@@ -54,7 +48,6 @@ public class ProjectController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteProject(@PathVariable UUID id) {
-        // TODO: implement deleteProject
         var response = projectService.deleteProject(id);
         return response.toResponseEntity();
     }

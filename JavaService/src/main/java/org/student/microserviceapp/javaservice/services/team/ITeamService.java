@@ -1,7 +1,7 @@
 package org.student.microserviceapp.javaservice.services.team;
 
-import org.student.microserviceapp.javaservice.dto.CreateTeamDTO;
-import org.student.microserviceapp.javaservice.dto.TeamDTO;
+import org.student.microserviceapp.javaservice.dto.team.CreateTeamDTO;
+import org.student.microserviceapp.javaservice.dto.team.TeamDTO;
 import org.student.microserviceapp.javaservice.responses.Result;
 
 import java.util.List;

@@ -1,8 +1,9 @@
-package org.student.microserviceapp.javaservice.dto;
+package org.student.microserviceapp.javaservice.dto.project;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.student.microserviceapp.javaservice.dto.company.CompanyDTO;
 import org.student.microserviceapp.javaservice.models.Project;
 
 import java.time.LocalDate;
