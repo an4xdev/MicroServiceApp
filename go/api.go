@@ -1,9 +1,11 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
-	"time"
+	"os"
 
 	"github.com/gorilla/websocket"
 	"github.com/streadway/amqp"
@@ -17,17 +19,63 @@ var (
 	}
 )
 
-func main() {
-	go consumeRabbitMQ()
+type RabbitMQConfig struct {
+	Host     string
+	Port     string
+	User     string
+	Password string
+}
 
-	http.HandleFunc("/ws", handleConnections)
-
-	go handleMessages()
-
-	log.Println("Go server with WebSocket on port :8080")
-	if err := http.ListenAndServe("localhost:8080", nil); err != nil {
-		log.Fatal("ListenAndServe: ", err)
+func getRabbitMQConfig() RabbitMQConfig {
+	return RabbitMQConfig{
+		Host:     getEnv("RABBITMQ_HOST", "rabbitmq"),
+		Port:     getEnv("RABBITMQ_PORT", "5672"),
+		User:     getEnv("RABBITMQ_USER", "user"),
+		Password: getEnv("RABBITMQ_PASS", "password"),
 	}
+}
+
+func getEnv(key, defaultValue string) string {
+	if value, exists := os.LookupEnv(key); exists {
+		return value
+	}
+	return defaultValue
+}
+
+func checkRabbitMQConnection() bool {
+	config := getRabbitMQConfig()
+	connURL := fmt.Sprintf("amqp://%s:%s@%s:%s/",
+		config.User, config.Password, config.Host, config.Port)
+
+	conn, err := amqp.Dial(connURL)
+	if err != nil {
+		log.Printf("Error connecting to RabbitMQ: %v", err)
+		return false
+	}
+	defer conn.Close()
+
+	return true
+}
+
+func healthHandler(w http.ResponseWriter, _ *http.Request) {
+	rabbitmqOK := checkRabbitMQConnection()
+
+	w.Header().Set("Content-Type", "application/json")
+
+	if !rabbitmqOK {
+		w.WriteHeader(http.StatusServiceUnavailable)
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":   "unhealthy",
+			"rabbitmq": "disconnected",
+		})
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{
+		"status":   "healthy",
+		"rabbitmq": "connected",
+	})
 }
 
 func handleConnections(w http.ResponseWriter, r *http.Request) {
@@ -69,15 +117,19 @@ func consumeRabbitMQ() {
 	var conn *amqp.Connection
 	var err error
 
-	for i := range 5 {
-		conn, err = amqp.Dial("amqp://user:password@rabbitmq:5672/")
-		if err == nil {
-			break
-		}
-		log.Printf("Connection to RabbitMQ failed, attempt %d: %v", i+1, err)
-		log.Printf("Retrying in 5 seconds...")
-		time.Sleep(5 * time.Second)
-	}
+	config := getRabbitMQConfig()
+	connURL := fmt.Sprintf("amqp://%s:%s@%s:%s/",
+		config.User, config.Password, config.Host, config.Port)
+
+	conn, err = amqp.Dial(connURL)
+	// for i := 1; i <= 5; i++ {
+	// 	if err == nil {
+	// 		break
+	// 	}
+	// 	log.Printf("Connection to RabbitMQ failed, attempt %d: %v", i, err)
+	// 	log.Printf("Retrying in 5 seconds...")
+	// 	time.Sleep(5 * time.Second)
+	// }
 
 	if err != nil {
 		log.Fatalf("Failed to connect to RabbitMQ after 5 attempts: %v", err)
@@ -119,5 +171,19 @@ func consumeRabbitMQ() {
 	for d := range msgs {
 		log.Printf("Received message from queue: %s", d.Body)
 		broadcast <- string(d.Body)
+	}
+}
+
+func main() {
+	go consumeRabbitMQ()
+
+	http.HandleFunc("/ws", handleConnections)
+	http.HandleFunc("/health", healthHandler)
+
+	go handleMessages()
+
+	log.Println("Go server with WebSocket on port :8080")
+	if err := http.ListenAndServe("localhost:8080", nil); err != nil {
+		log.Fatal("ListenAndServe: ", err)
 	}
 }
