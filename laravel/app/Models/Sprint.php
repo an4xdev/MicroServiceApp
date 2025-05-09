@@ -30,18 +30,19 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Sprint extends Model
 {
+	protected $keyType = 'string';
 	protected $table = 'Sprints';
 	protected $primaryKey = 'Id';
 	public $incrementing = false;
 	public $timestamps = false;
 
 	protected $casts = [
-		'Id' => 'uuid',
+		'Id' => 'string',
 		'StartDate' => 'datetime',
 		'EndDate' => 'datetime',
-		'ManagerId' => 'uuid',
-		'ProjectId' => 'uuid',
-		'TeamId' => 'uuid'
+		'ManagerId' => 'string',
+		'ProjectId' => 'string',
+		'TeamId' => 'string'
 	];
 
 	protected $fillable = [
@@ -56,16 +57,6 @@ class Sprint extends Model
 	public function user()
 	{
 		return $this->belongsTo(User::class, 'ManagerId');
-	}
-
-	public function project()
-	{
-		return $this->belongsTo(Project::class, 'ProjectId');
-	}
-
-	public function team()
-	{
-		return $this->belongsTo(Team::class, 'TeamId');
 	}
 
 	public function tasks()

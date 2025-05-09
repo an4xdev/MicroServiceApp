@@ -5,6 +5,7 @@ RUN dotnet restore SharedObjects/SharedObjects/SharedObjects.csproj
 RUN dotnet build SharedObjects/SharedObjects/SharedObjects.csproj -c Release -o /app/shared
 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+RUN apt-get update && apt-get install -y curl
 WORKDIR /app
 EXPOSE 80 443
 

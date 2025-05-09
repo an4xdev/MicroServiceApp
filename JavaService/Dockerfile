@@ -12,6 +12,8 @@ RUN mvn clean package -DskipTests -B
 FROM eclipse-temurin:17-jre-alpine AS final
 WORKDIR /app
 
+RUN apk add --no-cache curl
+
 COPY --from=build /app/target/JavaService-0.0.1-SNAPSHOT.jar /app/javaservice.jar
 
 EXPOSE 8080

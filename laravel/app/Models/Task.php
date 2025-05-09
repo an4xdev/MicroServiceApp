@@ -30,17 +30,18 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Task extends Model
 {
+	protected $keyType = 'string';
 	protected $table = 'Tasks';
 	protected $primaryKey = 'Id';
 	public $incrementing = false;
 	public $timestamps = false;
 
 	protected $casts = [
-		'Id' => 'uuid',
+		'Id' => 'string',
 		'TaskTypeId' => 'int',
 		'TaskStatusId' => 'int',
-		'DeveloperId' => 'uuid',
-		'SprintId' => 'uuid'
+		'DeveloperId' => 'string',
+		'SprintId' => 'string'
 	];
 
 	protected $fillable = [
@@ -52,10 +53,6 @@ class Task extends Model
 		'SprintId'
 	];
 
-	public function task_type()
-	{
-		return $this->belongsTo(TaskType::class, 'TaskTypeId');
-	}
 
 	public function task_status()
 	{
@@ -70,10 +67,5 @@ class Task extends Model
 	public function sprint()
 	{
 		return $this->belongsTo(Sprint::class, 'SprintId');
-	}
-
-	public function task_histories()
-	{
-		return $this->hasMany(TaskHistory::class, 'TaskId');
 	}
 }

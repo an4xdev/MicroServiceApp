@@ -20,9 +20,19 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+if (connectionString == null)
+{
+    throw new Exception("Connection string not found.");
+}
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+    options.UseNpgsql(connectionString)
 );
+
+builder.Services.AddHealthChecks()
+    .AddNpgSql(connectionString);
 
 builder.Services.Configure<FormOptions>(options =>
 {
@@ -83,5 +93,7 @@ if (app.Environment.IsDevelopment() || Environment.GetEnvironmentVariable("ENABL
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseHealthChecks("/health");
 
 app.Run();

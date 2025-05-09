@@ -62,10 +62,20 @@ builder.Services.AddHybridCache(options =>
     };
 });
 
+var redisConnectionString = builder.Configuration.GetConnectionString("Redis");
+
+if (redisConnectionString == null)
+{
+    throw new Exception("Connection string not found.");
+}
+
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    options.Configuration = builder.Configuration.GetConnectionString("Redis");
+    options.Configuration = redisConnectionString;
 });
+
+builder.Services.AddHealthChecks()
+    .AddRedis(redisConnectionString);
 
 var app = builder.Build();
 
@@ -84,5 +94,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseHealthChecks("/health");
 
 app.Run();

@@ -25,22 +25,30 @@ use Illuminate\Database\Eloquent\Model;
  * 
  * @property Team|null $team
  * @property Collection|Team[] $teams
- * @property Collection|Sprint[] $sprints
  * @property Collection|Task[] $tasks
+ * @property Collection|Sprint[] $sprints
  *
  * @package App\Models
  */
 class User extends Model
 {
+	protected $keyType = 'string';
 	protected $table = 'Users';
 	protected $primaryKey = 'Id';
 	public $incrementing = false;
 	public $timestamps = false;
 
 	protected $casts = [
-		'Id' => 'uuid',
+		'Id' => 'string',
 		'RefreshTokenExpiryTime' => 'datetime',
-		'TeamId' => 'uuid'
+		'TeamId' => 'string'
+	];
+
+	protected $hidden = [
+		'PasswordHash',
+		'RefreshToken',
+		'RefreshTokenExpiryTime',
+		'PasswordSalt'
 	];
 
 	protected $fillable = [
@@ -54,23 +62,13 @@ class User extends Model
 		'TeamId'
 	];
 
-	public function team()
+	public function tasks()
 	{
-		return $this->belongsTo(Team::class, 'TeamId');
-	}
-
-	public function teams()
-	{
-		return $this->hasMany(Team::class, 'ManagerId');
+		return $this->hasMany(Task::class, 'DeveloperId');
 	}
 
 	public function sprints()
 	{
 		return $this->hasMany(Sprint::class, 'ManagerId');
-	}
-
-	public function tasks()
-	{
-		return $this->hasMany(Task::class, 'DeveloperId');
 	}
 }

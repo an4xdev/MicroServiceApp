@@ -10,11 +10,22 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+if (connectionString == null)
+{
+    throw new Exception("Connection string not found.");
+}
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("DatabaseManager"))
+    options.UseNpgsql(connectionString, b => b.MigrationsAssembly("DatabaseManager"))
 );
 
+builder.Services.AddHealthChecks()
+    .AddNpgSql(connectionString);
+
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -58,5 +69,7 @@ else
 {
     Console.WriteLine("No pending migrations.");
 }
+
+app.MapHealthChecks("/health");
 
 app.Run();

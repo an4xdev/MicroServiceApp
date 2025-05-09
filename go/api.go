@@ -122,14 +122,6 @@ func consumeRabbitMQ() {
 		config.User, config.Password, config.Host, config.Port)
 
 	conn, err = amqp.Dial(connURL)
-	// for i := 1; i <= 5; i++ {
-	// 	if err == nil {
-	// 		break
-	// 	}
-	// 	log.Printf("Connection to RabbitMQ failed, attempt %d: %v", i, err)
-	// 	log.Printf("Retrying in 5 seconds...")
-	// 	time.Sleep(5 * time.Second)
-	// }
 
 	if err != nil {
 		log.Fatalf("Failed to connect to RabbitMQ after 5 attempts: %v", err)

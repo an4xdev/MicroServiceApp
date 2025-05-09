@@ -40,9 +40,28 @@ const sequelize = new Sequelize(process.env.DATABASE_URL || "postgres://postgres
 
 const models = initModels(sequelize);
 
+// health check
+app.get("/health", async (_req, res) => {
+  try {
+    await sequelize.authenticate();
+    res.status(200).json({
+      status: "UP",
+      message: "Service is running",
+      database: "Connected",
+    });
+  } catch (error) {
+    console.error("Database connection error:", error);
+    res.status(500).json({
+      status: "DOWN",
+      message: "Service is running, but database connection failed",
+      database: "Disconnected",
+    });
+  }
+});
+
 // Task Types
 
-app.get("/api/taskTypes", async (req, res) => {
+app.get("/api/taskTypes", async (_req, res) => {
   const { TaskTypes } = models;
   try {
     const taskTypes = await TaskTypes.findAll();
@@ -137,7 +156,7 @@ app.delete("/api/taskTypes/:id", async (req, res) => {
 
 // Companies
 
-app.get("/api/companies", async (req, res) => {
+app.get("/api/companies", async (_req, res) => {
   const { Companies } = models;
   try {
     const companies = await Companies.findAll();

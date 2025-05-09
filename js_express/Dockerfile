@@ -10,6 +10,8 @@ RUN npx tsc
 
 FROM node:18-alpine AS final
 
+RUN apk add --no-cache curl
+
 WORKDIR /app
 
 COPY package*.json ./
